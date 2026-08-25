@@ -1,0 +1,60 @@
+874 postings from 93 companies
+
+[ok           ] q01 factual       75 posting(s),  30 compan(y/ies)
+                Which roles require running Kubernetes in production?
+                kubernetes=69, k8s=6
+
+[ok           ] q02 factual       36 posting(s),  21 compan(y/ies)
+                What experience do these postings ask for with Terraform or infrastructure
+                terraform=33, infrastructure as code=11, pulumi=6, iac=4, cloudformation=2
+
+[ok           ] q03 factual       44 posting(s),  22 compan(y/ies)
+                Which postings mention an on-call rotation, and what do they say about it?
+                on-call=35, rotation=19, oncall=6, on call=1, pager=1
+
+[ok           ] q04 keyword      131 posting(s),  56 compan(y/ies)
+                Which roles require SOC 2 compliance experience?
+                compliance=129, soc 2=5, soc2=1
+
+[THIN         ] q05 keyword        3 posting(s),   3 compan(y/ies)
+                Do any postings require a security clearance?
+                clearance=3, security clearance=3, ts/sci=1, polygraph=0
+
+[THIN         ] q06 keyword        2 posting(s),   2 compan(y/ies)
+                Which roles mention HIPAA or handling protected health information?
+                hipaa=2, protected health=0, health information=0
+
+[ok           ] q07 semantic     293 posting(s),  78 compan(y/ies)
+                I want a job where I own the reliability of a large system rather than shi
+                infrastructure=228, reliability=98, incident=53, availability=24, sre=23, uptime=6
+
+[ok           ] q08 semantic     590 posting(s),  92 compan(y/ies)
+                Which of these jobs would suit someone who likes turning messy data into t
+                data=480, pipeline=181, analytics=116, etl=12, warehouse=11
+
+[ok           ] q09 semantic     473 posting(s),  91 compan(y/ies)
+                Are there roles for someone who wants to lead people rather than write cod
+                lead=321, leadership=209, manager=187, mentor=71, direct reports=9
+
+[ok           ] q10 aggregate    202 posting(s),  66 compan(y/ies)
+                Across the postings you have, what programming languages come up most ofte
+                python=148, typescript=69, java=43, javascript=26, golang=13
+
+[ok           ] q11 aggregate    558 posting(s),  84 compan(y/ies)
+                Which postings state a salary range, and what ranges do they give?
+                $=439, range=374, salary=336, compensation=276, base pay=50
+
+[ok           ] q12 aggregate    452 posting(s),  82 compan(y/ies)
+                What do these postings say about remote or hybrid work?
+                remote=214, hybrid=156, distributed=120, in-office=67, onsite=47
+
+[ok           ] q16 aggregate    256 posting(s),  46 compan(y/ies)
+                What is the company's parental leave policy in weeks?
+                parental leave=186, weeks=116, months=68
+
+------------------------------------------------------------------------
+
+2 question(s) are supported by 3 or fewer postings. Keep them,
+but a miss on these says more about one posting than about retrieval:
+  q05: Do any postings require a security clearance?
+  q06: Which roles mention HIPAA or handling protected health information?

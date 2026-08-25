@@ -1,0 +1,36 @@
+# Core RAG stack
+langchain>=0.3
+langchain-community>=0.3
+langchain-core>=0.3
+langgraph>=0.2
+
+# Embeddings run locally: no API key, no per-chunk cost, and the demo can't
+# fail on a network hiccup. bge-small is 384-dim, which is matched to the
+# ~400-token chunks (see chunking.py).
+sentence-transformers>=3.0
+
+# Vector store. Chroma persists to disk with no account or service to run.
+chromadb>=0.5
+
+# Sparse half of hybrid retrieval. Catches exact tokens (Kubernetes, TS/SCI,
+# ICD-10) that dense embeddings blur.
+rank-bm25>=0.2.2
+
+# Generation. Only one of these is needed; config.py picks by env var.
+anthropic>=0.40
+openai>=1.50
+
+# Layout-aware resume parsing. Optional: resume_loader.py falls back to
+# pypdf/python-docx when LLAMA_CLOUD_API_KEY is absent or the service is
+# unreachable, so the app never depends on it being up.
+llama-parse>=0.5
+
+# UI + utilities
+streamlit>=1.38
+python-dotenv>=1.0
+pypdf>=4.0
+python-docx>=1.1
+pyyaml>=6.0
+
+# Cross-encoder reranking uses sentence-transformers (already above); no
+# extra dependency, just a second model download on first use.

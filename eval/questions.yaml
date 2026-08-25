@@ -1,0 +1,206 @@
+# Evaluation set.
+#
+# HOW THIS SET IS LABELLED, AND WHY IT IS NOT LABELLED WITH CHUNK IDS
+# --------------------------------------------------------------------
+# The textbook retrieval eval marks, for each question, exactly which chunks
+# are the correct answer, then measures recall@k against them. That requires
+# a human to read the corpus and label it, and it breaks the moment the
+# corpus is rebuilt or the chunk size changes -- which is precisely what this
+# project's chunking comparison does on purpose.
+#
+# So the labels here are TERM-LEVEL instead: for each answerable question,
+# the terms that must appear in the retrieved context for the question to be
+# answerable at all. "Which roles need Kubernetes at scale" cannot be
+# answered from chunks that never say kubernetes. That is a weaker signal
+# than true relevance judgement and it is stated as such in the writeup: it
+# measures whether retrieval surfaced the right VOCABULARY, not whether it
+# surfaced the best passage. It is stable across re-chunking, cheap to
+# maintain, and it catches the failure that actually happens.
+#
+# The strong labels are the refusal labels. `should_refuse: true` means
+# nothing in a corpus of job postings can answer this, and answering anyway
+# is a hallucination. Those are exact, human-checkable, and they are the
+# metric this app is really judged on.
+#
+# expect_terms uses OR-within-a-list: any one term counts as a hit, because
+# postings say "K8s" or "Kubernetes" and both are correct.
+
+questions:
+
+  # ---------------------------------------------------------------------
+  # Answerable, single-posting factual. The baseline: if these fail,
+  # nothing else matters.
+  # ---------------------------------------------------------------------
+  - id: q01
+    category: factual
+    question: "Which roles require running Kubernetes in production?"
+    expect_terms: [kubernetes, k8s]
+    should_refuse: false
+
+  - id: q02
+    category: factual
+    question: "What experience do these postings ask for with Terraform or infrastructure as code?"
+    expect_terms: [terraform, infrastructure as code, iac, cloudformation, pulumi]
+    should_refuse: false
+
+  - id: q03
+    category: factual
+    question: "Which postings mention an on-call rotation, and what do they say about it?"
+    expect_terms: [on-call, on call, oncall, pager, rotation]
+    should_refuse: false
+
+  # ---------------------------------------------------------------------
+  # Exact-keyword. Rare, specific strings that a dense model blurs into
+  # its neighbours -- this is the bucket BM25 exists for, and the place
+  # hybrid should beat dense-only if hybrid is worth its complexity.
+  # ---------------------------------------------------------------------
+  - id: q04
+    category: keyword
+    question: "Which roles require SOC 2 compliance experience?"
+    expect_terms: ["soc 2", soc2, compliance]
+    should_refuse: false
+
+  - id: q05
+    category: keyword
+    question: "Do any postings require a security clearance?"
+    expect_terms: [clearance, "ts/sci", polygraph, "security clearance"]
+    should_refuse: false
+
+  - id: q06
+    category: keyword
+    question: "Which roles mention HIPAA or handling protected health information?"
+    expect_terms: [hipaa, "protected health", "health information"]
+    should_refuse: false
+
+  # ---------------------------------------------------------------------
+  # Paraphrase / semantic. The question deliberately shares almost no
+  # vocabulary with the postings, so BM25 has nothing to match on. This
+  # is the mirror image of the keyword bucket: dense should carry it.
+  # ---------------------------------------------------------------------
+  - id: q07
+    category: semantic
+    question: "I want a job where I own the reliability of a large system rather than shipping features. What is there?"
+    expect_terms: [reliability, sre, uptime, availability, incident, infrastructure]
+    should_refuse: false
+
+  - id: q08
+    category: semantic
+    question: "Which of these jobs would suit someone who likes turning messy data into things other teams can use?"
+    expect_terms: [data, pipeline, etl, warehouse, analytics]
+    should_refuse: false
+
+  - id: q09
+    category: semantic
+    question: "Are there roles for someone who wants to lead people rather than write code all day?"
+    expect_terms: [manager, lead, leadership, mentor, "direct reports"]
+    should_refuse: false
+
+  # ---------------------------------------------------------------------
+  # Aggregate / comparative. Needs several postings in context at once,
+  # so it stresses TOP_K_CONTEXT and the chunking strategy rather than
+  # the retriever.
+  # ---------------------------------------------------------------------
+  - id: q10
+    category: aggregate
+    question: "Across the postings you have, what programming languages come up most often?"
+    expect_terms: [python, java, golang, typescript, javascript]
+    should_refuse: false
+
+  - id: q11
+    category: aggregate
+    question: "Which postings state a salary range, and what ranges do they give?"
+    expect_terms: [salary, compensation, "$", range, base pay]
+    should_refuse: false
+
+  - id: q12
+    category: aggregate
+    question: "What do these postings say about remote or hybrid work?"
+    expect_terms: [remote, hybrid, onsite, in-office, distributed]
+    should_refuse: false
+
+  # ---------------------------------------------------------------------
+  # Unanswerable. Nothing in a corpus of job postings can support these.
+  # Answering any of them is a hallucination, and this is the bucket the
+  # whole refusal design exists for.
+  # ---------------------------------------------------------------------
+  - id: q13
+    category: unanswerable
+    question: "What was this company's revenue last quarter?"
+    expect_terms: []
+    should_refuse: true
+    why: "Financial results are not in a job posting. A model that answers is drawing on training data, which is the exact failure mode."
+
+  - id: q14
+    category: unanswerable
+    question: "Who is the hiring manager for this role and what is their email address?"
+    expect_terms: []
+    should_refuse: true
+    why: "Contact details are never in these feeds. Inventing a plausible name and address is both a hallucination and a privacy problem."
+
+  - id: q15
+    category: unanswerable
+    question: "How many people applied to this job so far?"
+    expect_terms: []
+    should_refuse: true
+    why: "Application volume exists nowhere in the corpus, but it is exactly the kind of number a model will happily estimate."
+
+  # RELABELLED after the first generation run. This was written as a trap, on
+  # the assumption that benefits language appears in postings but specific
+  # durations do not. That assumption was never checked, and it was wrong:
+  # the corpus contains 190 sentences mentioning parental leave, many with
+  # exact figures ("18 weeks of paid parental leave", "4+ months paid
+  # Parental Leave"). The pipeline answered it correctly and was scored as
+  # having hallucinated.
+  #
+  # The label was the bug, not the answer. Same failure as the boilerplate
+  # detector: a confident claim about the data, written into a comment,
+  # never measured. Recorded here rather than quietly corrected, because a
+  # test set edited without explanation is indistinguishable from one tuned
+  # to flatter the result.
+  - id: q16
+    category: aggregate
+    question: "What is the company's parental leave policy in weeks?"
+    expect_terms: ["parental leave", "weeks", "months"]
+    should_refuse: false
+    why: "Originally labelled unanswerable. Corrected: the corpus states specific durations, so refusing this would be an over-refusal, not a safe decline."
+
+  - id: q17
+    category: unanswerable
+    question: "Which of these roles has the highest chance of being laid off next year?"
+    expect_terms: []
+    should_refuse: true
+    why: "Unanswerable in principle, not just absent from the corpus. Speculation dressed as a fact is worse than a refusal."
+
+  - id: q18
+    category: unanswerable
+    question: "What is the best way to negotiate a job offer?"
+    expect_terms: []
+    should_refuse: true
+    why: "The model knows a decent answer from training data, which is why it belongs here: the app must refuse questions the CORPUS cannot answer, even when the model could answer them. Grounding is the promise; general helpfulness is not."
+
+  # ---------------------------------------------------------------------
+  # Off-DOMAIN. Added after the first eval run, which showed that every
+  # "unanswerable" question above is still topically about jobs and
+  # companies -- so retrieval returns high-similarity chunks for all of
+  # them and the similarity threshold separates nothing (gap: +0.013).
+  #
+  # That result proves guard 1 cannot catch off-CONTENT questions. It says
+  # nothing about whether it catches off-DOMAIN ones, because the set
+  # contained none. These two supply the missing control. If similarity on
+  # these lands far below the on-topic questions, guard 1 works for the
+  # narrow job it can actually do; if it does not, guard 1 is dead weight
+  # and the writeup should say so.
+  # ---------------------------------------------------------------------
+  - id: q19
+    category: off_domain
+    question: "What is a good recipe for sourdough bread?"
+    expect_terms: []
+    should_refuse: true
+    why: "Nothing to do with employment. If retrieval returns this at the same similarity as a real question, the similarity signal carries no information at all and guard 1 should be removed rather than defended."
+
+  - id: q20
+    category: off_domain
+    question: "How do I replace the brake pads on a 2015 Honda Civic?"
+    expect_terms: []
+    should_refuse: true
+    why: "Second off-domain control, deliberately from a different subject area so the result is not an artifact of one unlucky query."

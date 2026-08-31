@@ -114,9 +114,13 @@ DEMO = [
     # (question, expect_refusal, why it is in the video)
     ("Which roles require running Kubernetes in production?", False,
      "the working answer -- citations and the retrieval panel"),
-    # Measured at top_sim 0.618 -- ABOVE MIN_SIM 0.60. Guard 1 lets this
-    # through; guard 2 refuses it. That is the project's thesis in one query,
-    # and mislabelling it as guard 1 is the exact error the eval exists to catch.
+    # NOTE: a shortened variant of eval q15 ("...applied to this job SO FAR?").
+    # Kept short because it is what gets typed on camera, and because this exact
+    # wording has been measured twice at top_sim 0.618 -- ABOVE MIN_SIM 0.60.
+    # Guard 1 lets it through; guard 2 refuses it. That is the project's thesis
+    # in one query. Do not silently swap in the eval wording without re-measuring:
+    # 0.618 sits 0.018 above the threshold, and a different phrasing could fall
+    # below it and change which guard fires.
     ("How many people applied to this job?", True,
      "GUARD 2: clears the similarity threshold, model refuses on reading it."),
     ("What is a good recipe for sourdough bread?", True,

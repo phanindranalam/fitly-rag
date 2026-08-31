@@ -34,3 +34,13 @@ pyyaml>=6.0
 
 # Cross-encoder reranking uses sentence-transformers (already above); no
 # extra dependency, just a second model download on first use.
+
+# Explicit rather than transitive. numpy arrives with chromadb and torch with
+# sentence-transformers today, but retrieve.py and embeddings.py import them
+# directly -- an undeclared direct import is a dependency you do not control.
+numpy>=1.26
+torch>=2.0
+
+# Only make_test_resumes.py needs this, to generate the synthetic resume
+# fixtures. Undeclared, that script fails on a fresh clone.
+reportlab>=4.0

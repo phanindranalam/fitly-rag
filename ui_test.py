@@ -114,8 +114,11 @@ DEMO = [
     # (question, expect_refusal, why it is in the video)
     ("Which roles require running Kubernetes in production?", False,
      "the working answer -- citations and the retrieval panel"),
+    # Measured at top_sim 0.618 -- ABOVE MIN_SIM 0.60. Guard 1 lets this
+    # through; guard 2 refuses it. That is the project's thesis in one query,
+    # and mislabelling it as guard 1 is the exact error the eval exists to catch.
     ("How many people applied to this job?", True,
-     "GUARD 1: on-topic but the data does not exist. The thesis."),
+     "GUARD 2: clears the similarity threshold, model refuses on reading it."),
     ("What is a good recipe for sourdough bread?", True,
      "GUARD 1: off-domain."),
     # VERBATIM from eval/questions.yaml q14. The email clause matters: without

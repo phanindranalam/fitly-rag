@@ -183,8 +183,13 @@ _TITLE_WORDS = [
 _TITLE_RE = re.compile(
     r"^\s*([A-Z][A-Za-z0-9&/,\.\-\+ ]{2,60}?)\s*(?:[|@,–—-]|$)", re.MULTILINE)
 
+# The lookbehind is not decoration. Without it, "1.5 years of professional
+# experience" matches on the "5" and reports a candidate with eighteen months
+# as having five years -- silently, with no error, in the direction that makes
+# them look more qualified. Found by testing against a synthetic junior
+# resume; every real resume tested happened to state a whole number.
 _YEARS_RE = re.compile(
-    r"(\d{1,2})\+?\s*(?:\+)?\s*years?\s+(?:of\s+)?(?:progressive\s+|relevant\s+|professional\s+)?experience",
+    r"(?<![\d.])(\d{1,2}(?:\.\d)?)\+?\s*(?:\+)?\s*years?\s+(?:of\s+)?(?:progressive\s+|relevant\s+|professional\s+)?experience",
     re.IGNORECASE)
 
 # 2019 - 2023, 2019 to Present, 03/2019 - 05/2023
@@ -192,14 +197,26 @@ _RANGE_RE = re.compile(
     r"(?:(\d{1,2})[/\-])?(\d{4})\s*(?:[–—\-]|to)\s*(?:(\d{1,2})[/\-])?(\d{4}|present|current|now)",
     re.IGNORECASE)
 
+# Order matters and it is not alphabetical. "Junior Developer" contains both
+# a seniority marker ("junior") and a bare role noun ("developer"); whichever
+# tuple is checked first wins. With "mid" ahead of "entry", every junior
+# engineer, junior analyst and junior developer was labelled mid -- an error
+# that only ever ran in the flattering direction.
+#
+# "mid" is also the odd one out: the others are explicit claims about level,
+# while "engineer" or "analyst" is just a job noun that says nothing about
+# seniority. It is kept last, and treated as a weak signal below.
 _SENIORITY = [
     ("executive", ("chief", "vp ", "vice president", "head of", "svp", "cto", "cio", "ceo")),
     ("director", ("director", "sr. director", "senior director")),
     ("manager", ("manager", "supervisor", "team lead")),
     ("senior", ("senior", "sr.", "staff", "principal", "lead ")),
-    ("mid", ("engineer", "analyst", "specialist", "developer", "consultant")),
     ("entry", ("intern", "junior", "jr.", "associate", "trainee", "entry")),
+    ("mid", ("engineer", "analyst", "specialist", "developer", "consultant")),
 ]
+
+# The generic role-noun bucket. A title match here is not evidence of level.
+_WEAK_SENIORITY = "mid"
 
 
 def extract_titles(text: str, limit: int = 6) -> list[str]:
@@ -235,7 +252,7 @@ def extract_years(text: str, current_year: int = 2026) -> float | None:
     overcounts gaps and undercounts overlapping roles; it is reported as
     approximate everywhere it is shown for exactly that reason.
     """
-    stated = [int(m.group(1)) for m in _YEARS_RE.finditer(text)]
+    stated = [float(m.group(1)) for m in _YEARS_RE.finditer(text)]
     if stated:
         return float(max(stated))
 
@@ -253,11 +270,26 @@ def extract_years(text: str, current_year: int = 2026) -> float | None:
     return float(span) if 0 < span <= 50 else None
 
 
-def infer_seniority(titles: list[str], years: float | None) -> str:
-    blob = " ".join(titles).lower()
-    for label, markers in _SENIORITY:
-        if any(mk in blob for mk in markers):
-            return label
+def _marker_in(marker: str, blob: str) -> bool:
+    """Word-boundary match for a seniority marker.
+
+    A plain substring test looks fine and is wrong in a way nothing reports:
+    "director" contains "cto", so every Director of Engineering was
+    classified as an executive. Same shape as the retrieval-label bug where
+    "phi" matched inside "sophisticated" -- an unanchored `in` on short
+    acronyms will always find them somewhere.
+
+    Markers ending in "." ("sr.") are matched with a leading boundary only,
+    since a period is already a boundary on the right.
+    """
+    mk = marker.strip()
+    if not mk:
+        return False
+    pattern = r"\b" + re.escape(mk) + (r"" if mk.endswith(".") else r"\b")
+    return re.search(pattern, blob) is not None
+
+
+def _years_ladder(years: float | None) -> str:
     if years is None:
         return ""
     if years >= 12:
@@ -265,6 +297,25 @@ def infer_seniority(titles: list[str], years: float | None) -> str:
     if years >= 5:
         return "mid"
     return "entry"
+
+
+def infer_seniority(titles: list[str], years: float | None) -> str:
+    """Level from titles, falling back to years.
+
+    An explicit marker in a title ("Staff", "Director", "Junior") beats a year
+    count, because it is what the person calls themselves. A bare role noun
+    ("Developer") is NOT such a marker -- it appears in every title at every
+    level -- so when that is all we matched, a stated year count wins. Without
+    that rule someone with eighteen months and the title "Frontend Developer"
+    is reported as mid-level.
+    """
+    blob = " ".join(titles).lower()
+    for label, markers in _SENIORITY:
+        if any(_marker_in(mk, blob) for mk in markers):
+            if label == _WEAK_SENIORITY:
+                return _years_ladder(years) or label
+            return label
+    return _years_ladder(years)
 
 
 # Acronym matching is what lets the taxonomy catch "SOC 2", "HIPAA" and

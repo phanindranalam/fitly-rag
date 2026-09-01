@@ -1,8 +1,10 @@
 # Fitly RAG
 
-**Find the jobs worth your time — with evidence, not guesses.**
+> **Find the jobs worth your time — with evidence, not guesses.**
 
-[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>) · [**Build log**](https://claude.ai/code/artifact/ad450b5b-3fe1-4c66-a414-b87dc2270972)
+**Fitly is a RAG system over 874 live job postings whose hardest problem isn't finding the right posting — it's knowing when the postings it found don't answer the question. Hybrid retrieval and reranking locate the evidence; three independent guards decide whether there's enough of it to answer at all.**
+
+[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>)
 
 Fitly answers questions about real, currently-open job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
 
@@ -12,6 +14,43 @@ Which postings match my resume, and where's the evidence on both sides?
 Which of these 127 jobs deserve my time?
 What does this posting require that isn't evidenced in my resume?
 ```
+
+---
+
+## Four questions. One threshold. Three refusals.
+
+Every question below was measured against the same 874-posting index. The number is
+cosine similarity between the question and the best chunk retrieved for it — the
+score this system uses to decide whether it is confident enough to answer.
+
+```
+                                    MIN_SIM
+                                     0.60
+                                       │
+   0.416                               │ 0.618   0.648        0.727
+     ●─────────────────────────────────┼───●───────●────────────●
+     │                                 │   │       │            │
+  sourdough                            │  how     who's the   Kubernetes
+   recipe                              │  many?    hiring      in prod?
+                                       │           manager?
+  ✗ REFUSED                            │ ✗ REFUSED ✗ REFUSED   ✓ ANSWERED
+    guard 1                            │  guard 2   guard 2     + citations
+    model never called                 │
+                                       │
+       ◄── "nothing relevant here" ────┼──── "this looks relevant" ──►
+```
+
+Three of these four clear the confidence threshold. **Two of those three still cannot
+be answered.** The postings that came back are genuinely about jobs — they just don't
+contain a hiring manager's name or an application count.
+
+That gap is what this project is about. A similarity score tells you whether you
+retrieved something *related*. It cannot tell you whether the retrieved text *contains
+the answer*. Measured across the full evaluation set, the separation between answerable
+and unanswerable-but-on-topic questions is **+0.013** — noise. Against genuinely
+off-domain questions it is **+0.203**.
+
+So the score catches sourdough. Something else has to catch the hiring manager.
 
 ---
 

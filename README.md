@@ -1,19 +1,93 @@
-# Fitly RAG
+# Fitly
 
-> **Find the jobs worth your time — with evidence, not guesses.**
+**Forty tabs open. Three hours before Monday. Which five are actually worth applying to?**
 
-**Fitly is a RAG system over 874 real job postings whose hardest problem isn't finding the right posting — it's knowing when the postings it found don't answer the question. Hybrid retrieval and reranking locate the evidence; three independent guards decide whether there's enough of it to answer at all.**
+Reading 850-odd job postings properly takes about **58 hours** — four minutes each, and that's fast for a document written to be skimmed. Nobody does it. So everyone skims, applies to the wrong things, and hears nothing back.
+
+Fitly reads them for you. And it shows you the posting behind every single thing it tells you.
+
+```
+You:     Which roles actually require Kubernetes in production —
+         not just mention it somewhere?
+
+Fitly:   Perplexity's AI Infrastructure Engineer requires "managing
+         large-scale Kubernetes deployments in production" [1]. Airbyte's
+         Senior SRE requires "hands-on ownership of Kubernetes in
+         production" [2]. Cockroach Labs' Production Services role
+         requires "running Kubernetes in production" [4].
+
+         [1] Perplexity     — Member of Technical Staff, AI Infrastructure
+         [2] Airbyte        — Senior Site Reliability Engineer
+         [3] Render         — Software Engineer, Network Infrastructure
+         [4] Cockroach Labs — Member of Technical Staff, Production Services
+         [5] Render         — Software Engineer, Infrastructure
+
+         Five roles. Five citations. Every one opens the posting.
+```
+
+Every claim numbered. Every number opens the actual job ad. Nothing to take on faith.
+
+---
+
+**Now the half that took most of the work: the questions it won't answer.**
+
+```
+You:     How many people applied to this job?
+
+Fitly:   I don't have enough information in the retrieved postings
+         to answer that.
+```
+
+Ask that same question of most AI tools and you'll get something like *"approximately 250 candidates, which is typical for a Senior SRE role."*
+
+**That number does not exist.** Not in this posting, not in any posting — job ads don't contain application counts. It was invented, and it sounded completely reasonable, and you'd have no way to tell.
+
+You're deciding where to spend a Sunday. Possibly where to spend the next three years. An assistant that makes things up at that moment is worse than no assistant at all.
+
+So Fitly is built the other way round: **the refusal came first, and everything else was built around it.**
+
+---
+
+## For the person actually doing the applying
+
+You already know the parts nobody writes down. That a posting can run 900 words and
+tell you almost nothing. That "5+ years required" sometimes means it and sometimes
+doesn't. That you'll read forty of these on a Sunday, apply to six, hear back from
+none — and never find out which of the six were even plausible.
+
+Here is a measured version of that feeling. **48.8% of the text in these postings is
+boilerplate** — EEO statements, benefits blurbs, "about us" paragraphs, the same words
+in every ad the company publishes. You are not bad at reading job ads. Nearly half of
+what you are reading is not about the job.
+
+**What the tools do about it: nothing, or worse.**
+
+Everything in this space optimizes for *more*. More matches, more results, one-click
+applications. That serves the employer, who now sorts a bigger pile — and it works
+against you, because your application is in the pile. The newer AI tools add a second
+problem on top: a fluent, confident summary you have no way to check. It reads like
+help. It might be invented, and you would never know.
+
+**What Fitly does instead.** It doesn't find you more jobs. It reads the ones in front
+of you, and it shows its work.
+
+- **Every claim opens the posting it came from.** Any sentence it tells you can be
+  checked in about five seconds. Nothing asks to be taken on trust.
+- **When the postings don't say, it says so.** You will never act on a number Fitly
+  invented, because it is built to fail toward *"I don't know"* — measured at **zero
+  missed refusals** across twenty test questions, graded by a model that had no stake
+  in the result.
+- **It will never tell you you're unqualified.** Upload a resume and it says
+  *"not evidenced in your resume"* — never *"you lack."* A keyword you didn't happen to
+  write down is a gap in a document, not a gap in you. That distinction is written into
+  the prompt as a rule, not left to the model's manners.
+
+The benefit isn't speed. It's that after an hour you have a shorter list, a reason for
+every name on it, and a link you can click to check any reason you doubt.
+
+---
 
 [**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>)
-
-Fitly answers questions about real job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
-
-```
-Which roles actually require Kubernetes in production, not just mention it?
-Which postings match my resume, and where's the evidence on both sides?
-Which of these 127 jobs deserve my time?
-What does this posting require that isn't evidenced in my resume?
-```
 
 ---
 
@@ -54,36 +128,21 @@ So the score catches sourdough. Something else has to catch the hiring manager.
 
 ---
 
-## Why I built this
+## Why refusing is the hard part
 
-Job search tools are good at finding *more* jobs. The harder problem is deciding which ones deserve an evening of your life.
+Refusing is easy when the question is obviously unrelated. Ask about sourdough and
+nothing relevant comes back, so there's nothing to be tempted by.
 
-I hit this during my own search: *does this posting actually require Kubernetes, or does it just mention it once under "nice to have"?*
+The hard case is the question that *looks* answerable. "How many people applied" is
+a question about a job, asked of a pile of job postings. Retrieval does its job
+perfectly and hands back five genuinely relevant chunks. Every signal the system has
+says *go ahead*.
 
-Answering that by hand means reading 874 postings. At four minutes each — which is fast, for a document written to be skimmed — that's **58 hours. Seven working days of reading, to answer one question.** Then the next question starts over. So the obvious build is a chatbot over job descriptions.
+**97.9% claim-level faithfulness · 0 missed refusals across 20 evaluation questions ·
+graded by a different model family than the one writing the answers**
 
-Except that has a failure mode which makes it worse than useless, and it shows up in the first five minutes:
-
-```
-You:  How many people applied to this job?
-
-Typical RAG:  "Approximately 250 candidates have applied to this position,
-               which is typical for a Senior SRE role."
-
-Reality:       Job postings do not contain application counts. Not one.
-               That number was invented, and it sounded fine.
-
-Fitly:        "I don't have enough information in the retrieved postings
-               to answer that."
-```
-
-And here is the part that took the longest to get right. **Retrieval was confident on that question.** Top similarity 0.618, against a 0.60 threshold — the postings that came back look, by every measure the retriever has, relevant. They're job postings and it's a question about a job.
-
-The refusal doesn't come from a low score. It comes from the model reading the retrieved text and finding no application count in it.
-
-A search box that returns nothing is annoying. An assistant that fabricates a number while you're making decisions about your career is a different category of problem. So I designed the refusal path first, and most of this repo is machinery for knowing when to shut up.
-
----
+Those numbers are the whole point of the sections below: not that it answers well,
+but that it was measured on how often it *shouldn't* answer and didn't.
 
 ## Try it in 60 seconds
 

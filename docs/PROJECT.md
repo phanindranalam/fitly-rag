@@ -6,7 +6,6 @@
 |---|---|
 | **Repo** | https://github.com/phanindranalam/fitly-rag |
 | **Demo video** | `<FILL: video url>` |
-| **Build log** (visual companion) | `<FILL: artifact url>` |
 
 ---
 

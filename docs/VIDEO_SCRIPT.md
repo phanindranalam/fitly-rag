@@ -55,13 +55,18 @@ seconds for typing and model latency.
 
 ---
 
-## 0:00 – 0:18 — Hook *(req 2)*
+## 0:00 – 0:24 — Hook + the one-liner *(req 2)*
 
 **Screen: the app, already open. No title card.**
 
-> "Most RAG demos show you a system that knows the answer. I wanted one that knows when it *doesn't* — and can prove it.
+> "Most RAG demos show a system that knows the answer. I wanted one that knows when it *doesn't* — and can prove it.
 >
-> This is Fitly. 874 real job postings, 93 companies, every answer cited back to the posting it came from."
+> This is Fitly: a RAG system over 850-odd real job postings, where the hard problem isn't finding the right posting — it's knowing when the one you found doesn't answer the question. Retrieval finds the evidence. Three independent guards decide whether there's enough of it to answer at all."
+
+*Second paragraph is the same one-liner that opens the README and the write-up.
+Say it close to verbatim — a reviewer who watches the video and then opens the repo
+should hear the same sentence twice. That repetition is what makes a submission feel
+deliberate rather than assembled.*
 
 ---
 

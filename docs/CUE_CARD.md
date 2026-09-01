@@ -4,11 +4,11 @@ Full wording lives in `VIDEO_SCRIPT.md`. **Don't read that while recording.** Gl
 
 ---
 
-## The eight beats
+## The eleven beats
 
 | # | do | first line — say this one exactly | numbers |
 |---|---|---|---|
-| 1 | app open, don't touch anything | "Most RAG demos show you a system that knows the answer. I wanted one that knows when it **doesn't**." | 874 · 93 |
+| 1 | app open, don't touch anything | "Most RAG demos show a system that knows the answer. I wanted one that knows when it **doesn't**." → then **the one-liner**: *"the hard problem isn't finding the right posting — it's knowing when the one you found doesn't answer the question."* | 850-odd |
 | 2 | switch to terminal | "The interesting part is cleaning." | 312 vs 25 → **48.8%** |
 | 3 | type Kubernetes question | *(talk over the wait)* "Two retrievers run side by side." | **0.727** · dense 3 · bm25 5 |
 | 4 | expand panel while it loads | "**Two of these five came from BM25 alone.**" | 2 rows with a dash in dense |

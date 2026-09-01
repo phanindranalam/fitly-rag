@@ -10,14 +10,17 @@ Full wording lives in `VIDEO_SCRIPT.md`. **Don't read that while recording.** Gl
 |---|---|---|---|
 | 1 | app open, don't touch anything | "Most RAG demos show you a system that knows the answer. I wanted one that knows when it **doesn't**." | 874 · 93 |
 | 2 | switch to terminal | "The interesting part is cleaning." | 312 vs 25 → **48.8%** |
-| 3 | type Kubernetes question | "Cited. Each one opens the actual posting." | top sim **0.727** |
-| 4 | expand retrieval panel | "This is what most demos hide." | dense 3 · bm25 5 · **2 rows BM25-only** |
-| 5 | type sourdough | "Start with the easy one." | **0.416** < 0.60 · model never called |
-| 6 | click applied-count example | "Now the interesting one." | **0.618 — clears the threshold** |
-| 7 | switch to eval markdown | "But here's the finding I'd put my name on." | **0.013** → **0.203** |
-| 8 | point at judge line | "My first evaluation said 98.5% faithful." | → **97.9%**, 95 → **90** |
-| 9 | no screen change | "On tooling: I built this with Claude as a pair programmer." | "several of the most important mistakes" — not "every single one" |
-| 10 | — | "97.9% claim-level faithfulness, zero missed refusals — judged by a different model family." | **never say "zero hallucinations"** |
+| 3 | type Kubernetes question | *(talk over the wait)* "Two retrievers run side by side." | **0.727** · dense 3 · bm25 5 |
+| 4 | expand panel while it loads | "**Two of these five came from BM25 alone.**" | 2 rows with a dash in dense |
+| 5 | type security clearance | "And look — **TS/SCI**." | **0.653** · point at the acronym |
+| 6 | type sourdough | "Something obviously unrelated." | **0.416** < 0.60 · model never called |
+| 7 | click applied-count example | "Now the one I care about." | **0.618 — clears the threshold** |
+| 8 | switch to eval markdown | "The finding I'd put my name on." | **0.013** → **0.203** |
+| 9 | point at the judge line | "Originally I reported 98.5% faithful." | → **97.9%**, 95 → **90** |
+| 10 | upload the pre-opened resume | "Same pipeline, different query." | keyword taxonomy, never an LLM |
+| 11 | no screen change → close | "On tooling: I built this with Claude as a pair programmer." | "several of the most important mistakes" — **not** "every single one" |
+
+**Closing line:** "97.9% claim-level faithfulness, zero missed refusals, judged by a different model family. But the more useful result is the one that made me change the architecture." → **never say "zero hallucinations"**
 
 **If you only remember one sentence in the whole video, make it beat 6:**
 
@@ -52,9 +55,10 @@ Shorter filler for the refusals (7–20s):
 
 | by | you should be at |
 |---|---|
-| 0:50 | typing the Kubernetes question |
-| 2:15 | finishing the refusals |
-| 3:00 | starting the independent judge |
-| 4:15 | starting AI tools |
+| 0:40 | typing the Kubernetes question |
+| 1:20 | typing the security-clearance question |
+| 1:52 | at the applied-count question |
+| 2:25 | starting the evaluation section |
+| 3:45 | starting AI tools |
 
-**Past 3:10 and not at beat 8? Skip the resume.**
+**Past 2:40 and not at the evaluation? Drop the resume beat (10).**

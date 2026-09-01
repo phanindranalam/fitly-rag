@@ -21,9 +21,9 @@ main change in this version.
 python -c "from graph import ask; from retrieve import Filters; s=ask('Which roles require a security clearance?', strategy='section', mode='hybrid', use_rerank=True, filters=Filters()); a=s['answer']; r=s['retrieval']; print('refused', a.refused, '| top_sim', round(r.top_sim,3), '| citations', len(a.citations or [])); print((a.text or a.reason)[:300]); print('dense', sum(1 for h in r.hits if h.dense_rank is not None), 'bm25', sum(1 for h in r.hits if h.sparse_rank is not None))"
 ```
 
-- **Answers with citations** → keep beat 4, and check whether BM25 carried it.
-- **Refuses, or the answer is thin** → **cut beat 4 entirely** and give those 20
-  seconds back to the evaluation. Do not demo an unmeasured query on camera.
+Measured result: **answers, `top_sim 0.653`, 2 citations, dense 3 · bm25 5**, and
+the answer names TS/SCI. Re-run it only if you change the corpus or the index —
+in which case every other number in this script needs re-measuring too.
 
 ### Guard 3 stays ON
 

@@ -1,11 +1,11 @@
 # Fitly
 
-**Forty tabs open. Three hours before Monday. Which five jobs are actually worth applying to?**
+**Forty tabs open... Three hours before Monday. Which five jobs are actually worth applying to?**
 
-Reading 850-odd job postings properly takes about **58 hours** — four minutes each, and that's fast for a document written to be skimmed. Nobody does it. So everyone skims, applies to the wrong things, and hears nothing back.
+Reading 850-odd job postings properly takes about **58 hours**,  four minutes each, and that's fast for a document written to be skimmed. Nobody does it. So everyone skims, applies to the wrong things, and hears nothing back.
 
 Fitly reads them for you.
-Fitly is an evidence-grounded job-search assistant built over 870 real postings from over 90 companies and it shows you the posting behind every single thing it tells you.
+**Fitly** is an evidence-grounded job-search assistant built over 870 real postings from over 90 companies and it shows you the posting behind every single thing it tells you.
 
 ```
 You:     Which roles actually require Kubernetes in production —

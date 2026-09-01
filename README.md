@@ -1,6 +1,6 @@
 # Fitly
 
-**Forty tabs open. Three hours before Monday. Which five are actually worth applying to?**
+**Forty tabs open. Three hours before Monday. Which five jobs are actually worth applying to?**
 
 Reading 850-odd job postings properly takes about **58 hours** — four minutes each, and that's fast for a document written to be skimmed. Nobody does it. So everyone skims, applies to the wrong things, and hears nothing back.
 

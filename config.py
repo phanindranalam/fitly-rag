@@ -39,11 +39,18 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "nebius").strip().lower()
 
 NEBIUS_BASE_URL = os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.com/v1/")
 NEBIUS_API_KEY = os.getenv("NEBIUS_API_KEY", "")
-# Llama 3.1 70B: strong enough to follow a strict grounding instruction and
+# Llama 3.3 70B: strong enough to follow a strict grounding instruction and
 # refuse when the context doesn't support an answer, which is the behaviour
 # this whole app is judged on. The 8B variant is ~20x cheaper and noticeably
 # worse at refusing, which is exactly the wrong place to economize.
-NEBIUS_MODEL = os.getenv("NEBIUS_MODEL", "meta-llama/Meta-Llama-3.1-70B-Instruct")
+#
+# This default was `Meta-Llama-3.1-70B-Instruct` for most of the build, which
+# does not exist on Token Factory and 404s on the first generation call. Every
+# result in the writeup was produced with 3.3, set via .env -- so the default
+# was wrong for anyone who cloned the repo and never for the person who wrote
+# it. `python list_models.py` lists what the endpoint actually serves; it
+# existed the whole time and would have caught this on day one.
+NEBIUS_MODEL = os.getenv("NEBIUS_MODEL", "meta-llama/Llama-3.3-70B-Instruct")
 
 # INDEPENDENT EVALUATION
 # ----------------------
@@ -124,13 +131,16 @@ TOP_K_CONTEXT = int(os.getenv("TOP_K_CONTEXT", "5"))
 # least-irrelevant chunk in a corpus that has nothing to say; thresholding it
 # measures retriever agreement, not relevance. See RetrievalResult.confident.
 #
-# 0.45 is a starting point for bge-small, where a genuinely on-topic passage
-# usually lands around 0.6-0.8 and an unrelated one around 0.2-0.4. It is not
-# a guess you should trust: `python eval/run_eval.py --sweep-threshold` walks
-# it across the eval set and prints where the answerable and unanswerable
-# questions actually separate. Set MIN_SIM from that number, and put the
-# number in the writeup.
-MIN_SIM = float(os.getenv("MIN_SIM", "0.45"))
+# 0.60, and that number came from `--sweep-threshold` walking the labelled set,
+# not from a hunch. The default was 0.45 -- the pre-measurement guess -- long
+# after the sweep had replaced it, which meant a fresh clone did not reproduce
+# any published result. Every figure in the writeup assumes 0.60: the applied-
+# count question sits at 0.618 and is refused by guard 2 *because* it clears
+# this line. At 0.45 that finding does not exist.
+#
+# Re-run the sweep if the corpus changes; the right threshold is a property of
+# the corpus and the embedding model, not a constant.
+MIN_SIM = float(os.getenv("MIN_SIM", "0.60"))
 
 # Guard 3: verify the finished answer against its context before returning it.
 # Costs one extra API call per answered question and roughly doubles latency on

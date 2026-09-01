@@ -2,7 +2,7 @@
 
 **Find the jobs worth your time — with evidence, not guesses.**
 
-[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>) · [**Build log**](https://claude.ai/code/artifact/ad450b5b-3fe1-4c66-a414-b87dc2270972)
+[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>)
 
 Fitly answers questions about real, currently-open job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
 
@@ -73,7 +73,7 @@ You need a key only for the part that writes prose. Full-corpus build instructio
 
 | | |
 |---|---|
-| Answers containing an unsupported claim | **0** |
+| Questions answered that should have been refused | **0** |
 | Faithfulness | **97.9%** — 1 unsupported claim in 47 |
 | Refusal accuracy | **90%** (18/20) — both errors are over-refusals, not fabrications |
 | Citations pointing at a posting that wasn't retrieved | **0** |
@@ -84,7 +84,9 @@ Two things worth knowing about these numbers before you trust them.
 
 **The judge is a different model family from the generator** (`Qwen3-235B` grading `Llama-3.3-70B`). An earlier run scored 98.5% with the generator grading its own output — that's not a measurement, it's a model agreeing with itself. Swapping in an independent judge moved faithfulness *down* to 97.9% and refusal accuracy *down* to 90%. Both fell, which is why the new numbers are the ones I'd defend.
 
-**Both refusal errors are the safe kind.** One question was refused at the similarity threshold that shouldn't have been; one correct answer was overturned by the verification guard for a structural reason described below. Zero questions produced a fabricated answer. Given the choice, this system fails toward "I don't know."
+**Both refusal errors are the safe kind.** One question was refused at the similarity threshold that shouldn't have been; one correct answer was overturned by the verification guard for a structural reason described below. No question that should have been declined got answered instead — the failures all run toward "I don't know."
+
+What that does *not* say is "zero hallucinations." One claim in 47 was judged unsupported. That is a different measurement from a missed refusal, and conflating them would make the headline stronger and less true.
 
 ---
 

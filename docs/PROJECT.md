@@ -6,13 +6,12 @@
 |---|---|
 | **Repo** | https://github.com/phanindranalam/fitly-rag |
 | **Demo video** | `<FILL: video url>` |
-| **Build log** (visual companion) | `<FILL: artifact url>` |
 
 ---
 
 ## The one-liner
 
-> **My RAG app helps job seekers answer "what does this role actually require, and does it fit me" from 874 live job postings fetched from 93 companies' Greenhouse, Ashby and Lever boards, in a Streamlit interface, at 97.9% faithfulness and zero hallucinations across a 20-question evaluation set, within a declared 5-second retrieval latency budget.**
+> **My RAG app helps job seekers answer "what does this role actually require, and does it fit me" from 874 live job postings fetched from 93 companies' Greenhouse, Ashby and Lever boards, in a Streamlit interface, at 97.9% claim-level faithfulness and zero missed refusals across a 20-question evaluation set, within a declared 5-second retrieval latency budget.**
 
 Against the three rules the framework sets:
 
@@ -342,7 +341,7 @@ The eval's faithfulness judge uses a fourth, near-identical prompt, deliberately
 | End-to-end p50 / p95 | 12.2s / 47.4s (2–3 hosted LLM calls) |
 | Mean prompt tokens | 1,443 |
 
-**Zero hallucinations across 20 questions, under a judge that has no incentive to be kind.** Both errors are over-refusals, and they fail at different stages:
+**Zero missed refusals across 20 questions, under a judge with no incentive to be kind** — no question that should have been declined was answered instead. Claim-level faithfulness is 97.9%: one claim in 47 was judged unsupported, inside an answer that was otherwise grounded. Those are two different measurements and this writeup keeps them apart, because "zero hallucinations" would be the stronger sentence and the less true one. Both errors are over-refusals, and they fail at different stages:
 
 - **q03** — "which postings mention an on-call rotation" — refused at the retrieval guard despite 44 postings discussing it. `MIN_SIM=0.60` bought three correct refusals and cost this one. That is the precision-recall tradeoff made concrete, and 0.60 remains right: an unhelpful refusal is recoverable by rephrasing; a confident fabrication is not.
 - **q10** — "what programming languages come up most often" — answered correctly, then **overturned by guard 3**. See Finding 07: the verifier was not malfunctioning, it was right on its own terms, and that is the interesting part.
@@ -453,7 +452,7 @@ This generalizes well past job postings. An HR policy bot retrieves the parental
 
 **Next, in priority order — each pointed at by a result above:**
 
-1. **An independent judge model.** Different family for verification and evaluation. Removes the single largest methodological weakness, and it is a config change away — Token Factory hosts 30 models.
+1. **Human adjudication on a sampled subset.** The judge is now a different model family (§8, Finding 06), which removes the shared-blind-spot problem but not the LLM-as-judge problem. 47 claims graded by one model is a proxy for human judgement, not a substitute — and it is the next real limit on how far these numbers can be trusted.
 2. **Expand to 100+ questions**, reported by category, adding location, compensation, cross-document and adversarial classes.
 3. **Query rewriting to replace `widen`.** Tripling k rescued nothing; rewriting into corpus vocabulary is the version that works.
 4. **Fan-out for aggregate questions.** "Which languages appear most often" answered from a single citation — that needs several retrievals merged, a map-reduce shape LangGraph expresses naturally.
@@ -469,11 +468,11 @@ Built in a single extended session with **Claude (Cowork mode)** as a pair progr
 
 **What the AI did well:** scaffolding the pipeline quickly, writing the docstrings that made each design decision explicit and therefore *falsifiable*, and — most valuably — building the diagnostic tooling. `bench_embed.py`, `check_coverage.py` and `smoke_test.py` were all written specifically to test assumptions, and each caught something.
 
-**What it got wrong.** Every one of the five findings in §8 was an error in AI-written code or AI-written analysis. The global-frequency boilerplate detector, the substring matcher, the RRF threshold, the mislabelled trap question, the embedding-dimension claim. **All were confidently argued in comments before being tested. None crashed.**
+**What it got wrong.** Several of the most consequential errors in §8 came from AI-written code or AI-assisted analysis — and none of them crashed. The global-frequency boilerplate detector, the substring matcher, the RRF threshold, the mislabelled trap question, the embedding-dimension claim. **All were confidently argued in comments before being tested. None crashed.**
 
-**The lesson, and it is the main one I take from this week:** the failure mode of AI-assisted development is not broken code — broken code announces itself. It is *plausible* code that runs cleanly and produces a confident wrong number. Four of five were caught only because a measurement was compared against what the data should plausibly look like. The fifth needed a human reader.
+**The lesson, and it is the main one I take from this week:** the failure mode of AI-assisted development is not broken code — broken code announces itself. It is *plausible* code that runs cleanly and produces a confident wrong number. Most were caught only because a measurement was compared against what the data should plausibly look like. The fifth needed a human reader.
 
-**So the workflow that actually worked:** have the AI write the argument down explicitly, then build the check that could falsify it, then run the check. Every docstring asserting a property of the data is a hypothesis, and this project falsified five of them.
+**So the workflow that actually worked:** have the AI write the argument down explicitly, then build the check that could falsify it, then run the check. That changed how I used the tool: every confident architectural claim in a docstring became a hypothesis to try to falsify. This project falsified seven of them.
 
 The corollary is uncomfortable and worth stating: **knowing this pattern did not prevent it.** Finding 04 is Finding 01 repeated after it had been diagnosed in writing. What catches these is a check that runs, not a lesson that was learned.
 

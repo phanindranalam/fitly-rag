@@ -1,222 +1,210 @@
-# Demo video — word-for-word, 5:00 hard cap
+# Demo video — word-for-word, 4:40 target / 5:00 hard cap
 
-Read this aloud. It is timed. Every number you say is on screen when you say it.
+**Capability first, failure-awareness second.** A reviewer should leave thinking
+*"I'd use this"* before they think *"clever guardrails."* That ordering is the
+main change in this version.
 
-**The handout scores four things.** Each beat below is tagged with which one it satisfies:
+**The handout scores four things:**
 
 1. Walk through your application
 2. Explain what you built
-3. **Describe how you used AI coding tools** ← the reference video I benchmarked skipped this entirely. Free points.
+3. **Describe how you used AI coding tools** ← explicitly required, easy to lose to the clock
 4. Demonstrate the final result **live**
 
 ---
 
 ## Before you hit record
 
-### Guard 3: leave it ON unless the test says otherwise
-
-`VERIFY_ANSWERS` gates **guard 3 in the live runtime** (`graph.py:132`) — not an
-eval-only component. Turning it off weakens a behavior the writeup claims, so
-don't do it by default.
-
-It costs less than it looks. `node_verify` returns immediately on refusals
-(`if ans.refused ... return state`), and **three of your four demo questions are
-refusals.** Only the Kubernetes question pays the extra call — about 40 seconds.
-
-**Decide with evidence, not preference.** Leave `VERIFY_ANSWERS=true` and run:
+### Test the second query first — it is the only unmeasured thing in this script
 
 ```cmd
-python ui_test.py
+python -c "from graph import ask; from retrieve import Filters; s=ask('Which roles require a security clearance?', strategy='section', mode='hybrid', use_rerank=True, filters=Filters()); a=s['answer']; r=s['retrieval']; print('refused', a.refused, '| top_sim', round(r.top_sim,3), '| citations', len(a.citations or [])); print((a.text or a.reason)[:300]); print('dense', sum(1 for h in r.hits if h.dense_rank is not None), 'bm25', sum(1 for h in r.hits if h.sparse_rank is not None))"
 ```
 
-- Kubernetes question **answers normally** → record with guard 3 **on**. *(This is what happened when tested: `verify ok: 0/5 claims unsupported`.)* You
-  demonstrate everything you claim, with no asterisk. Use line A at 3:00.
-- Guard 3 **overturns it** → that is the Finding 07 false-positive class firing
-  live. Set `VERIFY_ANSWERS=false`, use line B at 3:00, and turn it back on
-  after recording.
+- **Answers with citations** → keep beat 4, and check whether BM25 carried it.
+- **Refuses, or the answer is thin** → **cut beat 4 entirely** and give those 20
+  seconds back to the evaluation. Do not demo an unmeasured query on camera.
 
-Either way: **the UI renders no trace of guard 3** — `app.py` never reads
-`verified` / `claims_total` / `worst_claim`. So narrate it; don't point at it.
+### Guard 3 stays ON
 
-- [ ] `python ui_test.py --fast` → 0 failed
-- [ ] `python ui_test.py` → 0 failed *(4 API calls, ~2 min — this is your rehearsal)*
-- [ ] `streamlit run app.py` already running, **browser at 125% zoom** — the retrieval table is unreadable at default in a compressed video
+`VERIFY_ANSWERS=true`. Last three runs: `verify ok: 0/5 claims unsupported` on the
+Kubernetes answer. Saying "I built three guards" and then disabling one is an
+asterisk you don't need.
+
+**Two answered questions × ~40s of verification is ~80 seconds of spinner.** That
+is fine, because both waits are scripted:
+
+- **Wait 1** → you're reading the retrieval panel out loud anyway.
+- **Wait 2** → that's where the guard-3 explanation goes. Latency becomes evidence
+  of the architecture instead of dead air.
+
+### Checklist
+
+- [ ] `python ui_test.py` → 0 failed
+- [ ] Streamlit running, **warmed with a throwaway query**, browser at **125%**
 - [ ] Sidebar: Anywhere / no work-mode / **section** / **hybrid** / rerank **on**
-- [ ] Tab 2: `eval/results/eval-<latest>.md`
-- [ ] Tab 3: the whiteboard artifact
-- [ ] Terminal visible, scrolled to the boilerplate stats from the corpus build
-- [ ] **Notifications off. Slack closed.** Nothing on screen you don't want graded.
+- [ ] Tab 2: `eval/results/eval-<latest>.md` · Tab 3: the whiteboard artifact
+- [ ] Terminal on the boilerplate stats
+- [ ] **`data\test_resumes\platform_sre.pdf` open in the file picker already**, or
+      in a folder containing exactly one file — live file-browsing is a classic
+      30-second demo failure and there is nothing to learn from watching it
+- [ ] Notifications off, Slack quit
 
-**Word budget: 723 spoken words.** At a normal presenting clip (~170 wpm) that is 4 minutes 15 seconds, leaving ~45 seconds for typing and page loads. If you speak slowly it becomes 5:30 — so do one timed practice run.
-
-**Do one timed practice run.** The single most common failure in these videos is running out of time and losing the last section — which is where the AI-tools requirement lives.
+**Word budget: ~640 spoken words** → about 3:45 at a normal clip, leaving ~55
+seconds for typing and model latency.
 
 ---
 
-## 0:00 – 0:16 — Cold open *(req 2)*
+## 0:00 – 0:18 — Hook *(req 2)*
 
-**Screen: the app, already open. No title card, no slide.**
+**Screen: the app, already open. No title card.**
 
 > "Most RAG demos show you a system that knows the answer. I wanted one that knows when it *doesn't* — and can prove it.
 >
-> This is Fitly. 874 real job postings, 93 companies, every answer cited. When the postings don't contain the answer, it says so. That refusal path is what I designed first."
-
-*Sixteen seconds, thesis delivered. Never open with a stack list.*
+> This is Fitly. 874 real job postings, 93 companies, every answer cited back to the posting it came from."
 
 ---
 
-## 0:16 – 0:46 — The corpus, and one fact about the world *(req 2)*
+## 0:18 – 0:40 — The corpus *(req 2)*
 
-**Screen: terminal, boilerplate stats visible.**
+**Screen: terminal, boilerplate stats.**
 
-> "Live postings from Greenhouse, Ashby and Lever board APIs — the employer's own text.
+> "Postings come from Greenhouse, Ashby and Lever board APIs — the employer's own text.
 >
-> The interesting part is cleaning. Job postings are mostly *not about the job* — every one has an EEO statement, a benefits blurb, an 'about us'. So this detects boilerplate from the data: fingerprint every paragraph, drop what repeats.
+> The interesting part is cleaning. Job ads are mostly *not about the job*. So this fingerprints every paragraph and drops what repeats — per employer, because Stripe's EEO statement names Stripe.
 >
-> **First version found exactly zero.** Because boilerplate is written per employer — Stripe's EEO statement names Stripe. My cutoff was 312 documents when the ceiling was 25.
->
-> Per employer —" **[point]** "— **48.8%.** Nearly half of what employers write in a job ad is text they put in every other ad."
-
-*A fact about the world, not about your code. It's the line people repeat.*
+> **48.8%.** Nearly half of what employers write is text they put in every other ad."
 
 ---
 
-## 0:46 – 1:26 — A real answer, and the retrieval panel *(reqs 1, 4)*
+## 0:40 – 1:20 — Useful query 1 *(reqs 1, 4)*
 
 **Type:** `Which roles require running Kubernetes in production?`
 
-Read **one** sentence of the answer. Scroll to Sources.
+**Talk over the wait — expand "How this answer was retrieved" while it runs.**
 
-> "Cited. Each one opens the actual posting."
-
-**Expand "How this answer was retrieved."**
-
-> "This is what most demos hide. Dense rank and BM25 rank, side by side — embeddings for meaning, BM25 for exact strings. Dense misses TS/SCI, BM25 misses paraphrase.
+> "Two retrievers run side by side. Embeddings for meaning, BM25 for exact strings — they fail on opposite inputs, so I fuse them by *rank*, not by score.
 >
-> Fused by **rank**, not by score — cosine and BM25 are incompatible scales, and any weight you pick rots as the corpus grows.
->
-> And look —" **[point at the rows with a dash in the dense column]** "— **two of these five came from BM25 alone. Dense retrieval never surfaced them.** That's the argument for hybrid, on screen instead of in a bullet."
+> And look —" **[point at the dense column]** "— **two of these five came from BM25 alone.** Dense retrieval never surfaced them."
 
-*Measured on this exact query: dense contributed 3, BM25 contributed 5, overlap 3. Do not say "completely disjoint" — it isn't, and the panel will contradict you.*
+**When the answer lands:** read one sentence, scroll to Sources, click a citation.
+
+> "Every claim cited, and each one opens the actual posting."
 
 ---
 
-## 1:26 – 2:16 — The refusals. **The most important 50 seconds.** *(req 4)*
+## 1:20 – 1:40 — Useful query 2 *(reqs 1, 4)* — **CUT IF THE TEST ABOVE FAILED**
+
+**Type:** `Which roles require a security clearance?`
+
+> "Completely different requirement — and this is where the lexical half earns its place. Literal strings like TS/SCI are exactly what embeddings blur together."
+
+**Don't read the answer.** One glance at the panel, then move on. The point is that
+retrieval isn't tuned to one demo query.
+
+---
+
+## 1:40 – 1:52 — The obvious refusal *(req 4)*
 
 **Type:** `What is a good recipe for sourdough bread?`
 
-> "Start with the easy one. Nothing to do with jobs —" **[point at the caption]** "— top similarity 0.416, threshold 0.60. It refuses, it tells you the number, and **the model was never called.** That's guard one, and it's the cheapest possible refusal: no tokens, no latency."
+> "First, something obviously unrelated. Similarity **0.416**, threshold 0.60 — the graph exits before the model is ever called. Cheap and deterministic."
+
+Ten seconds. Move on.
+
+---
+
+## 1:52 – 2:25 — The refusal that matters. **Slow down here.** *(req 4)*
 
 **Click the example:** `How many people applied to this job?`
 
-> "Now the interesting one. Application counts don't exist in job postings — but that's exactly the number a model will happily estimate.
+> "Now the one I care about. Application counts don't exist in job postings — but that's exactly the number a model will happily estimate.
 >
-> And watch the similarity: **0.618. It clears the threshold.** Retrieval is *confident*, so guard one waves this straight through. The model reads the actual text and refuses anyway — INSUFFICIENT_CONTEXT.
+> Watch the similarity: **0.618. It clears my threshold.** Retrieval is confident. Guard one waves it straight through. The model reads the retrieved text and refuses anyway."
+
+**Pause. Then, slowly:**
+
+> "**Similarity tells me whether I retrieved something related to the question. It does not tell me whether that text contains the answer.**
 >
-> **That's the whole thesis in one query.** The question is on-topic, so similarity can't tell it's unanswerable. Only reading the text can. **Guard one catches 'no results.' Guard two catches 'wrong results.'** Two failure modes, two mechanisms — and I have the numbers proving they aren't redundant."
+> Which is why retrieval confidence alone cannot be my hallucination guard."
 
-**Optional third, if time:** `Who is the hiring manager for this role and what is their email address?`
+---
 
-> "Same guard, and a privacy case too — inventing a plausible name and address is a hallucination *and* a leak."
-
-## 2:16 – 3:00 — The evaluation, and being wrong in public *(req 2)*
+## 2:25 – 3:05 — What the evaluation proved wrong *(req 2)*
 
 **Switch to the eval markdown.**
 
-> "None of that counts as a claim, so all of it is measured. Twenty labelled questions, eight configurations. Hybrid beat dense at both chunk sizes, reranking improved every config, and section-aware chunking won — against LangChain's standard splitter, not a strawman I wrote."
-
-**Slow down. This is the peak of the video.**
-
-> "But here's the finding I'd put my name on.
+> "Twenty labelled questions, eight configurations. Hybrid beat dense at both chunk sizes, reranking improved every config, section-aware chunking won — against LangChain's standard splitter, not a strawman.
 >
-> I assumed similarity could separate answerable questions from unanswerable ones. That's the entire premise of guard one. **The evaluation proved me wrong — the gap was 0.013.** Nothing.
+> But here's the finding I'd put my name on. I assumed similarity could separate answerable questions from unanswerable ones. **That's the entire premise of guard one. The gap was 0.013.** Nothing.
 >
-> Because every trap I wrote was still *about jobs.* 'What was revenue last quarter' is topically adjacent to a job posting, so retrieval returns company chunks at high similarity that don't contain revenue.
+> Because every trap I wrote was still *about jobs.* With genuinely off-domain questions the gap jumps to 0.203 — two and a half times wider.
 >
-> **Similarity measures topic. Not answerability.** With genuinely off-domain questions, 0.203.
->
-> So guard one is *structurally* blind to on-topic questions it can't answer. An HR bot retrieves the parental-leave policy perfectly when you ask for a number it never states."
+> So guard one is *structurally* blind to on-topic questions it can't answer. An HR bot retrieves the parental-leave policy perfectly when you ask for a number the policy never states."
 
 ---
 
-## 3:00 – 3:36 — The independent judge *(req 2)*
+## 3:05 – 3:30 — The independent judge *(req 2)*
 
 **Screen: eval header showing `judge=Qwen3-235B (independent)`.**
 
-> "One more — the one I'd want a reviewer to see.
+> "Originally I reported 98.5% faithfulness. Then I noticed the generator, the verifier and the judge were all the same model family — Llama grading Llama. So I moved both checking roles to Qwen.
 >
-> My first evaluation said 98.5% faithful. But the generator, the verifier and the judge were **all the same model.** That's not a measurement, that's Llama agreeing with Llama.
+> **My numbers got worse.** 97.9% faithfulness, refusal accuracy 95 down to 90. I kept the worse numbers, because they're the ones I can defend.
 >
-> I moved both checking roles to a different model family. **Both scores went down** — faithfulness to 97.9, refusal accuracy 95 to 90. That drop is the number I trust, and its size measures how inflated the old one was.
+> That verifier also exposed a structural limit: aggregate questions can't be validated from five chunks when the claim is about the whole corpus."
+
+---
+
+## 3:30 – 3:45 — Resume matching *(reqs 1, 4)*
+
+**Upload the pre-positioned resume.**
+
+> "Same pipeline, different query. Skills come from a keyword taxonomy, never an LLM — ask a model to extract skills and it invents plausible ones. And the prompt says **'not evidenced in your resume,' never 'you lack.'** The refusal principle, pointed at a person."
+
+---
+
+## 3:45 – 4:20 — AI coding tools *(req 3 — DO NOT SKIP)*
+
+> "On tooling: I built this with Claude as a pair programmer. Fast at scaffolding — and most valuably, it wrote the *argument* for each decision into the docstrings.
 >
-> The new verifier then overturned an answer that was *correct.* It was right to: that claim was about 2,916 chunks and it saw five. **Aggregate questions are structurally unverifiable in chunk-based RAG.** Reported, not tuned away."
-
-**Line A — recording with guard 3 ON** (add after the above):
-
-> "That verifier is running right now, on every answer you've seen. It's the reason this one took a beat longer."
-
-**Line B — recording with guard 3 OFF** (add after the above):
-
-> "It's switched off in this recording because it doubles latency on answered questions — and I'm telling you that rather than letting you assume otherwise. Guards one and two, the ones doing the refusing you just watched, are both live."
-
----
-
-## 3:36 – 3:54 — Resume matching *(reqs 1, 4)* — **CUT THIS FIRST IF BEHIND**
-
-**Drag a resume in.**
-
-> "Same pipeline, different query. Skills come from a keyword taxonomy, never an LLM — ask a model to extract skills and it invents plausible ones. And the prompt says **'not evidenced in your resume', never 'you lack.'** The refusal philosophy, pointed at a person."
-
----
-
-## 3:54 – 4:30 — AI coding tools *(req 3 — DO NOT SKIP)*
-
-> "On tooling: I built this with Claude as a pair programmer. Fast at scaffolding — and most valuably it wrote the *argument* for each decision into the docstrings, which is what made them falsifiable later.
+> **Several of the most important mistakes came from AI-written code or AI-assisted analysis — and none of them crashed.** All confidently argued in comments. A test suite would have passed every one.
 >
-> Here's the honest part. **Every single thing I got wrong was in AI-written code or AI-written analysis.** All confidently argued in comments. **None of it crashed.**
+> That changed how I used the tool. Every confident architectural claim became a hypothesis I tried to falsify — which is how all seven of them got found."
+
+---
+
+## 4:20 – 4:40 — Close
+
+> "The final system reaches **97.9% claim-level faithfulness with zero missed refusals**, judged by a model from a different family than the one writing the answers.
 >
-> That's the lesson. The failure mode of AI-assisted development isn't broken code — broken code announces itself. It's *plausible* code that runs clean and returns a confident wrong number. Each one was caught only because I built something that could falsify it."
+> But the more useful result is the one that made me change the architecture: **retrieval confidence stops being evidence exactly where the question stops being obvious.** Repo and write-up are linked below. Thanks."
 
 ---
 
-## 4:30 – 4:42 — Close
+## If you run long
 
-> "Zero hallucinations across twenty questions, judged by a model with no reason to be kind. Repo and writeup are linked below. Thanks."
+Cut in this order: **query 2 (1:20)** → **resume (3:30)** → shorten the corpus beat.
 
----
+**Never cut:** the 0.618 moment, the 0.013 finding, the independent judge, or the
+AI-tools section.
 
-## Timing discipline
+## Do not say
 
-You will run long. Everyone does. Cut in this order:
+- ❌ *"zero hallucinations"* — one claim in 47 was judged unsupported. Say **"zero missed refusals"** and **"97.9% claim-level faithfulness"**. They're different measurements and a reviewer will know.
+- ❌ *"every single thing I got wrong was AI-written"* — overclaims attribution and sounds like blame.
+- ❌ *"completely disjoint retrievers"* — measured overlap is 3 of 5.
+- ❌ Defining Chroma, bge-small, embedding dimensions, or LlamaParse. The repo proves those. Spoken time is for tradeoffs that are visible on screen.
 
-1. **4:20 resume section** — 25 seconds, entirely optional
-2. The RRF explanation at 1:15 — shorten to *"fused by rank, not by score, so there's no constant to tune"*
-3. The sourdough question at 2:20 — the other two refusals carry it
-
-**Never cut:** the 0.013 finding, the independent-judge section, or the AI-tools section. One is your thesis, one is your differentiator, one is a graded requirement.
-
----
-
-## Recording notes
-
-- **One take.** Small stumbles read as real; a stiff re-read doesn't.
-- **Rehearse the model names out loud once** — `bge-small`, `Llama-3.3-70B`, `Qwen3-235B`, `Chroma`, `LangGraph`. Fumbling your own stack on camera reads as not being in command of it, and it's the easiest thing to fix.
-- **Don't narrate the UI.** Not "now I'm clicking here." Say what it *means*.
-- **Every number you say aloud must be visible.** If it isn't on screen, don't say it.
-- Loom or the built-in recorder. **Don't edit.**
-- Watch the clock at 3:00. If you're past 3:10, drop the resume section on the spot.
-
----
-
-## Video description — paste this where you upload
+## Video description — paste at upload
 
 > **Fitly RAG — evidence-grounded job intelligence**
-> Week 2 · Track 2 (LangChain + LangGraph) · bring-your-own use case
+> Week 2 · Track 2 (LangChain + LangGraph)
 >
-> A retrieval system over 874 live job postings from 93 companies, built around one question: how does it know when it doesn't know?
+> RAG over 874 live job postings from 93 companies, built around one question: how does it know when the evidence is insufficient?
 >
-> Hybrid retrieval (dense + BM25 fused with Reciprocal Rank Fusion), cross-encoder reranking, LangGraph orchestration, and three independent refusal guards. Evaluated across 8 configurations on 20 labelled questions: 97.9% faithfulness, zero unsupported claims, zero dangling citations — graded by a different model family from the one that wrote the answers.
+> Hybrid retrieval (dense + BM25, fused by Reciprocal Rank Fusion), cross-encoder reranking, LangGraph orchestration, three independent refusal guards. Evaluated across 8 configurations on 20 labelled questions: 97.9% claim-level faithfulness, zero missed refusals, zero dangling citations — graded by a different model family than the one generating.
 >
-> The headline finding is a negative one: retrieval similarity measures *topic*, not *answerability*. Separation between answerable and unanswerable questions was 0.013 until genuinely off-domain questions were added, at which point it jumped to 0.203. Guard 1 is structurally blind to questions that are on-topic but unanswerable — which is why guard 2 exists.
+> The headline result is a negative one. Retrieval similarity measures *topic*, not *answerability*: separation between answerable and unanswerable-but-on-topic questions was 0.013, versus 0.203 for genuinely off-domain questions. Guard 1 is structurally blind to questions that are on-topic and unanswerable — which is why guard 2 exists.
 >
 > Repo: https://github.com/phanindranalam/fitly-rag

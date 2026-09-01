@@ -16,8 +16,8 @@ Full wording lives in `VIDEO_SCRIPT.md`. **Don't read that while recording.** Gl
 | 6 | click applied-count example | "Now the interesting one." | **0.618 — clears the threshold** |
 | 7 | switch to eval markdown | "But here's the finding I'd put my name on." | **0.013** → **0.203** |
 | 8 | point at judge line | "My first evaluation said 98.5% faithful." | → **97.9%**, 95 → **90** |
-| 9 | no screen change | "On tooling: I built this with Claude as a pair programmer." | — |
-| 10 | — | "Zero hallucinations across twenty questions. Thanks." | — |
+| 9 | no screen change | "On tooling: I built this with Claude as a pair programmer." | "several of the most important mistakes" — not "every single one" |
+| 10 | — | "97.9% claim-level faithfulness, zero missed refusals — judged by a different model family." | **never say "zero hallucinations"** |
 
 **If you only remember one sentence in the whole video, make it beat 6:**
 

@@ -4,7 +4,8 @@
 
 Reading 850-odd job postings properly takes about **58 hours** — four minutes each, and that's fast for a document written to be skimmed. Nobody does it. So everyone skims, applies to the wrong things, and hears nothing back.
 
-Fitly reads them for you. And it shows you the posting behind every single thing it tells you.
+Fitly reads them for you.
+Fitly is an evidence-grounded job-search assistant built over 870 real postings from over 90 companies and it shows you the posting behind every single thing it tells you.
 
 ```
 You:     Which roles actually require Kubernetes in production —
@@ -38,7 +39,7 @@ Fitly:   I don't have enough information in the retrieved postings
          to answer that.
 ```
 
-Ask that same question of most AI tools and you'll get something like *"approximately 250 candidates, which is typical for a Senior SRE role."*
+An ungrounded AI assistant can easily produce something like *"approximately 250 candidates, which is typical for a Senior SRE role."*
 
 **That number does not exist.** Not in this posting, not in any posting — job ads don't contain application counts. It was invented, and it sounded completely reasonable, and you'd have no way to tell.
 

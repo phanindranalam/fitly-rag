@@ -6,12 +6,13 @@
 |---|---|
 | **Repo** | https://github.com/phanindranalam/fitly-rag |
 | **Demo video** | `<FILL: video url>` |
+| **Build log** (visual companion) | `<FILL: artifact url>` |
 
 ---
 
 ## The one-liner
 
-> **My RAG app helps job seekers answer "what does this role actually require, and does it fit me" from 874 live job postings fetched from 93 companies' Greenhouse, Ashby and Lever boards, in a Streamlit interface, at 97.9% claim-level faithfulness and zero missed refusals across a 20-question evaluation set, within a declared 5-second retrieval latency budget.**
+> **My RAG app helps job seekers answer "what does this role actually require, and does it fit me" from 874 job postings fetched from 93 companies' Greenhouse, Ashby and Lever boards, in a Streamlit interface, at 97.9% claim-level faithfulness and zero missed refusals across a 20-question evaluation set, within a declared 5-second retrieval latency budget.**
 
 Against the three rules the framework sets:
 

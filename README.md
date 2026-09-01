@@ -2,11 +2,11 @@
 
 > **Find the jobs worth your time — with evidence, not guesses.**
 
-**Fitly is a RAG system over 874 live job postings whose hardest problem isn't finding the right posting — it's knowing when the postings it found don't answer the question. Hybrid retrieval and reranking locate the evidence; three independent guards decide whether there's enough of it to answer at all.**
+**Fitly is a RAG system over 874 real job postings whose hardest problem isn't finding the right posting — it's knowing when the postings it found don't answer the question. Hybrid retrieval and reranking locate the evidence; three independent guards decide whether there's enough of it to answer at all.**
 
 [**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>)
 
-Fitly answers questions about real, currently-open job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
+Fitly answers questions about real job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
 
 ```
 Which roles actually require Kubernetes in production, not just mention it?
@@ -111,16 +111,23 @@ You need a key only for the part that writes prose. Full-corpus build instructio
 
 ## Results
 
-874 postings from 93 companies, pulled live from Greenhouse, Ashby and Lever board APIs. 2,916 chunks. Evaluated on 20 hand-labelled questions — 13 answerable, 5 unanswerable but on-topic, 2 off-domain.
+874 postings from 93 companies, fetched from Greenhouse, Ashby and Lever board APIs and then frozen to a JSONL snapshot so every experiment runs against identical input. 2,916 chunks. Evaluated on 20 hand-labelled questions — 13 answerable, 5 unanswerable but on-topic, 2 off-domain.
 
 | | |
 |---|---|
-| Questions answered that should have been refused | **0** |
-| Faithfulness | **97.9%** — 1 unsupported claim in 47 |
-| Refusal accuracy | **90%** (18/20) — both errors are over-refusals, not fabrications |
-| Citations pointing at a posting that wasn't retrieved | **0** |
+| Questions producing a fabricated answer | **0 / 20** |
+| Missed refusals — should have declined, answered instead | **0 / 7** |
+| Claim-level faithfulness | **97.9%** — 46 of 47 claims supported |
+| Refusal accuracy | **90%** — 18/20; both errors were over-refusals |
+| Dangling citations — pointing at a posting that wasn't retrieved | **0** |
 | Best retrieval config | section-aware + hybrid + rerank — **100% hit@5, MRR 1.000** |
 | Retrieval p95 | **4.29s** against a declared 5s budget |
+
+The first two rows and the third measure different things, and the difference is the
+honest part: **no question produced a fabricated answer, and one claim out of 47 was
+still judged unsupported** — inside an answer that was otherwise grounded. "Zero
+hallucinations" would collapse those into one sentence that reads better than the
+evidence supports.
 
 Two things worth knowing about these numbers before you trust them.
 

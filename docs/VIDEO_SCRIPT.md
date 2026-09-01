@@ -15,7 +15,7 @@ main change in this version.
 
 ## Before you hit record
 
-### Test the second query first — it is the only unmeasured thing in this script
+### Query 2 is now measured — this command is here only if you want to re-confirm
 
 ```cmd
 python -c "from graph import ask; from retrieve import Filters; s=ask('Which roles require a security clearance?', strategy='section', mode='hybrid', use_rerank=True, filters=Filters()); a=s['answer']; r=s['retrieval']; print('refused', a.refused, '| top_sim', round(r.top_sim,3), '| citations', len(a.citations or [])); print((a.text or a.reason)[:300]); print('dense', sum(1 for h in r.hits if h.dense_rank is not None), 'bm25', sum(1 for h in r.hits if h.sparse_rank is not None))"
@@ -93,14 +93,16 @@ seconds for typing and model latency.
 
 ---
 
-## 1:20 – 1:40 — Useful query 2 *(reqs 1, 4)* — **CUT IF THE TEST ABOVE FAILED**
+## 1:20 – 1:40 — Useful query 2 *(reqs 1, 4)*
 
 **Type:** `Which roles require a security clearance?`
 
-> "Completely different requirement — and this is where the lexical half earns its place. Literal strings like TS/SCI are exactly what embeddings blur together."
+**MEASURED:** answers, `top_sim 0.653`, 2 citations, dense 3 · bm25 5 — and the
+answer names **TS/SCI** literally (PagerDuty Federal AE, Databricks Federal AE).
 
-**Don't read the answer.** One glance at the panel, then move on. The point is that
-retrieval isn't tuned to one demo query.
+> "Completely different requirement. And look —" **[point at TS/SCI in the answer]** "— **TS/SCI.** A literal string like that is exactly what embeddings blur together and BM25 nails. Retrieval here isn't tuned to one demo query."
+
+Point at the acronym, don't read the paragraph. Twenty seconds.
 
 ---
 
@@ -201,7 +203,7 @@ AI-tools section.
 > **Fitly RAG — evidence-grounded job intelligence**
 > Week 2 · Track 2 (LangChain + LangGraph)
 >
-> RAG over 874 live job postings from 93 companies, built around one question: how does it know when the evidence is insufficient?
+> RAG over 874 real job postings from 93 companies, built around one question: how does it know when the evidence is insufficient?
 >
 > Hybrid retrieval (dense + BM25, fused by Reciprocal Rank Fusion), cross-encoder reranking, LangGraph orchestration, three independent refusal guards. Evaluated across 8 configurations on 20 labelled questions: 97.9% claim-level faithfulness, zero missed refusals, zero dangling citations — graded by a different model family than the one generating.
 >

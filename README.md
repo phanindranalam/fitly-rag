@@ -2,7 +2,7 @@
 
 **Find the jobs worth your time — with evidence, not guesses.**
 
-[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>)
+[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>) · [**Build log**](https://claude.ai/code/artifact/ad450b5b-3fe1-4c66-a414-b87dc2270972)
 
 Fitly answers questions about real, currently-open job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
 
@@ -36,8 +36,11 @@ Reality:       Job postings do not contain application counts. Not one.
 
 Fitly:        "I don't have enough information in the retrieved postings
                to answer that."
-               (top similarity 0.31, below threshold — the model was never called)
 ```
+
+And here is the part that took the longest to get right. **Retrieval was confident on that question.** Top similarity 0.618, against a 0.60 threshold — the postings that came back look, by every measure the retriever has, relevant. They're job postings and it's a question about a job.
+
+The refusal doesn't come from a low score. It comes from the model reading the retrieved text and finding no application count in it.
 
 A search box that returns nothing is annoying. An assistant that fabricates a number while you're making decisions about your career is a different category of problem. So I designed the refusal path first, and most of this repo is machinery for knowing when to shut up.
 

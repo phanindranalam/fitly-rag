@@ -2,6 +2,8 @@
 
 **Find the jobs worth your time — with evidence, not guesses.**
 
+[**Full write-up**](docs/PROJECT.md) · [**Demo video**](<FILL: video url>) · [**Build log**](https://claude.ai/code/artifact/ad450b5b-3fe1-4c66-a414-b87dc2270972)
+
 Fitly answers questions about real, currently-open job postings and shows you the posting behind every answer. When the postings don't contain the answer, it says so instead of inventing something plausible.
 
 ```
@@ -17,7 +19,9 @@ What does this posting require that isn't evidenced in my resume?
 
 Job search tools are good at finding *more* jobs. The harder problem is deciding which ones deserve an evening of your life.
 
-I hit this during my own search: *does this posting actually require Kubernetes, or does it just mention it once under "nice to have"?* Answering that across 800 postings by hand isn't practical. So the obvious build is a chatbot over job descriptions.
+I hit this during my own search: *does this posting actually require Kubernetes, or does it just mention it once under "nice to have"?*
+
+Answering that by hand means reading 874 postings. At four minutes each — which is fast, for a document written to be skimmed — that's **58 hours. Seven working days of reading, to answer one question.** Then the next question starts over. So the obvious build is a chatbot over job descriptions.
 
 Except that has a failure mode which makes it worse than useless, and it shows up in the first five minutes:
 
@@ -52,7 +56,14 @@ python index.py --corpus data/corpus.sample.jsonl
 streamlit run app.py
 ```
 
-Embeddings run locally on CPU. Only generation calls an API, once per answer. Full-corpus build instructions are further down.
+Embeddings run locally on CPU. **Only generation calls an API** — so indexing, hybrid retrieval, reranking, and the entire retrieval evaluation run with no key at all:
+
+```bash
+python index.py --corpus data/corpus.sample.jsonl
+python eval/run_eval.py --retrieval --sweep-threshold    # zero API calls
+```
+
+You need a key only for the part that writes prose. Full-corpus build instructions are further down.
 
 ---
 

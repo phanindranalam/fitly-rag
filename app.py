@@ -54,7 +54,7 @@ def render_answer(state: dict, question: str) -> None:
     res = state["retrieval"]
 
     if ans.refused:
-        st.warning(ans.text)
+        st.warning(f"**Not enough evidence to answer**\n\n{ans.text}")
         st.caption(f"Why: {ans.reason}")
     else:
         st.markdown(ans.text)
@@ -119,7 +119,11 @@ def sidebar_controls() -> dict:
                                 help="Two indexes were built. Switch to compare them live.")
     mode = st.sidebar.radio("Retriever", ["hybrid", "dense"], index=0,
                             help="hybrid = dense + BM25 fused with RRF. dense = embeddings only.")
-    rerank = st.sidebar.toggle("Cross-encoder rerank", value=False,
+    # Defaults to ON because every published number -- retrieval hit@5, the
+    # demo similarities, the whole eval matrix's best row -- was measured with
+    # reranking on. A default that doesn't match the measured configuration
+    # means the app a reader opens is not the app the writeup describes.
+    rerank = st.sidebar.toggle("Cross-encoder rerank", value=True,
                                help="Slower and usually more accurate. The eval measures whether it actually helps here.")
 
     st.sidebar.divider()
@@ -144,9 +148,11 @@ def run(question: str, ctrl: dict, resume: str | None = None) -> None:
 # App
 # ---------------------------------------------------------------------------
 
-st.title("Fitly RAG")
-st.caption("Ask questions about real job postings and get answers with the posting attached — "
-           "or nothing at all, when the postings don't say.")
+st.title("Fitly")
+st.markdown("#### Find the jobs worth your time")
+st.caption("Ask across 874 real job postings. Every answer comes with the posting behind it — "
+           "or Fitly tells you when the evidence isn't there.")
+st.caption("874 postings · 93 companies · 97.9% claim-level faithfulness · 0 missed refusals")
 
 problems = config.check()
 if problems:
@@ -226,11 +232,17 @@ with tab_ask:
                 "answer — *what is the company's parental leave policy in weeks?* — and "
                 "watch it refuse instead of guessing.")
     q = st.text_input("Question", placeholder="Which roles require running Kubernetes in production?")
-    ex = st.columns(3)
-    for col, sample in zip(ex, [
+
+    # Every demo query is one click. Typing live on camera is the easiest way
+    # to lose fifteen seconds to a typo in a five-minute recording.
+    row1 = st.columns(3)
+    row2 = st.columns(2)
+    for col, sample in zip(list(row1) + list(row2), [
+        "Which roles require running Kubernetes in production?",
         "Which roles require a security clearance?",
         "What do these postings say about on-call?",
         "How many people applied to this job?",
+        "What is a good recipe for sourdough bread?",
     ]):
         if col.button(sample, width="stretch"):
             q = sample

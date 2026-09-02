@@ -1,0 +1,271 @@
+<title>Relevance ≠ Answerability</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --ground:#e9edf0;
+    --sheet:#f6f8f9;
+    --ink:#12161b;
+    --ink-2:#4a545e;
+    --ink-3:#7c8791;
+    --rule:#c3ccd3;
+    --flow:#1f5fa8;
+    --stop:#b0361d;
+    --ok:#1d6b4f;
+    --hero-bg:#f0e7e3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0d1013; --sheet:#161b20; --ink:#eef2f5; --ink-2:#a8b3bd;
+      --ink-3:#78838d; --rule:#333d46; --flow:#6aa6e8; --stop:#e5735a;
+      --ok:#5cc196; --hero-bg:#241a17;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0d1013; --sheet:#161b20; --ink:#eef2f5; --ink-2:#a8b3bd;
+    --ink-3:#78838d; --rule:#333d46; --flow:#6aa6e8; --stop:#e5735a;
+    --ok:#5cc196; --hero-bg:#241a17;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; margin:0;
+  }
+  .sheet{
+    width:min(100vw, calc(100vh * 16 / 9));
+    aspect-ratio:16/9; container-type:size;
+    background:var(--sheet);
+    display:flex; flex-direction:column;
+    padding:1.9cqw 3cqw 1.5cqw; gap:1cqw; overflow:hidden;
+  }
+
+  header{display:flex; align-items:flex-end; justify-content:space-between; gap:2cqw}
+  .lockup{display:flex; align-items:baseline; gap:.85cqw; margin:0 0 .5cqw}
+  .wordmark{
+    font-size:2.05cqw; font-weight:700; letter-spacing:-.03em;
+    line-height:1; color:var(--ink);
+  }
+  .wordmark .dot{color:var(--stop)}
+  .descriptor{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.98cqw; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink-3); line-height:1;
+  }
+  h1{font-size:3.25cqw; line-height:1; margin:0; font-weight:600; letter-spacing:-.02em}
+  h1 .ne{color:var(--stop)}
+  .thesis{
+    font-size:1.14cqw; line-height:1.5; color:var(--ink-2);
+    max-width:32cqw; margin:0; text-align:right;
+  }
+  .thesis b{color:var(--ink); font-weight:600}
+
+  .strip{
+    display:flex; gap:3.2cqw; align-items:baseline;
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    padding:.7cqw 0;
+  }
+  .strip div{display:flex; align-items:baseline; gap:.5cqw}
+  .strip .n{
+    font-size:1.75cqw; font-weight:600; letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;
+  }
+  .strip .l{font-size:.98cqw; color:var(--ink-2)}
+  .strip .good .n{color:var(--ok)}
+
+  /* min-height:0 lets the figure shrink inside the flex column; the SVG then
+     letterboxes to fit instead of overflowing the 16:9 sheet and getting
+     clipped at the bottom edge. */
+  figure{margin:0; flex:1; min-height:0; display:flex}
+  figure svg{width:100%; height:100%; display:block}
+
+  .band{display:grid; grid-template-columns:1.15fr 1fr; gap:2.6cqw; align-items:center}
+  .band-title{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.92cqw; letter-spacing:.15em; text-transform:uppercase;
+    color:var(--ink-3); margin:0 0 .5cqw;
+  }
+  .hero{
+    background:var(--hero-bg); border-left:.3cqw solid var(--stop);
+    padding:.85cqw 1.15cqw; display:flex; flex-direction:column; gap:.2cqw;
+  }
+  .hero .row{display:flex; align-items:baseline; gap:.8cqw}
+  .hero .big{
+    font-size:2.4cqw; font-weight:600; letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums; line-height:1; color:var(--stop);
+  }
+  .hero .pass{font-size:.98cqw; color:var(--ink-2); line-height:1.35}
+  .hero .q{font-size:1.14cqw; color:var(--ink); font-weight:600; margin:.3cqw 0 0}
+  .hero .kicker{font-size:1.02cqw; color:var(--ink-2); line-height:1.4; margin:0}
+  .hero .kicker b{color:var(--stop); font-weight:600}
+
+  footer{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid var(--rule); padding-top:.7cqw;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:.88cqw; color:var(--ink-3); letter-spacing:.04em;
+  }
+</style>
+
+<div class="sheet">
+  <header>
+    <div>
+      <p class="lockup">
+        <span class="wordmark">Fitly<span class="dot">.</span></span>
+        <span class="descriptor">Retrieval-Augmented Generation for job search</span>
+      </p>
+      <h1>Relevance <span class="ne">≠</span> Answerability</h1>
+    </div>
+    <p class="thesis">Retrieval similarity measures whether a posting is <b>about</b> your question. It does not measure whether that posting <b>contains the answer</b>. That gap is why one threshold cannot be a hallucination guard.</p>
+  </header>
+
+  <div class="strip">
+    <div><span class="n">874</span><span class="l">postings</span></div>
+    <div><span class="n">93</span><span class="l">companies</span></div>
+    <div class="good"><span class="n">97.9%</span><span class="l">claim-level faithfulness</span></div>
+    <div class="good"><span class="n">90%</span><span class="l">refusal accuracy</span></div>
+    <div class="good"><span class="n">0</span><span class="l">missed refusals</span></div>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 1500 590" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A job seeker's question enters a corpus of 874 frozen job postings. The retrieval half runs semantic and exact-term search in parallel, combines them by reciprocal rank fusion and orders them with a cross-encoder. The augmented generation half applies three checks: is this even relevant, does the evidence answer it, and are the claims supported. The result is either an answer where every claim links to a posting, or a refusal that says the evidence does not support an answer.">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--flow)"/>
+        </marker>
+      </defs>
+
+      <g font-family="IBM Plex Sans, sans-serif">
+
+        <!-- ============ RETRIEVAL ============ -->
+        <text x="750" y="16" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" letter-spacing="2.4" fill="var(--flow)">RETRIEVAL — TWO PATHS, FUSED BY RANK</text>
+
+        <rect x="20" y="34" width="268" height="104" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+        <text x="154" y="66" text-anchor="middle" font-size="19" font-weight="600" fill="var(--ink)">A job seeker asks</text>
+        <text x="154" y="94" text-anchor="middle" font-size="15" font-style="italic" fill="var(--ink-2)">“Which roles actually</text>
+        <text x="154" y="115" text-anchor="middle" font-size="15" font-style="italic" fill="var(--ink-2)">require Kubernetes?”</text>
+
+        <rect x="328" y="34" width="248" height="104" rx="3" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="452" y="66" text-anchor="middle" font-size="19" font-weight="600" fill="var(--ink)">874 real postings</text>
+        <text x="452" y="90" text-anchor="middle" font-size="13" fill="var(--ink-2)">frozen snapshot · 93 companies</text>
+        <text x="452" y="113" text-anchor="middle" font-size="13" font-weight="600" fill="var(--stop)">48.8% boilerplate removed</text>
+
+        <rect x="616" y="34" width="248" height="48" rx="3" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="740" y="55" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">Semantic search</text>
+        <text x="740" y="73" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">Dense · BGE</text>
+        <rect x="616" y="90" width="248" height="48" rx="3" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="740" y="111" text-anchor="middle" font-size="16" font-weight="600" fill="var(--ink)">Exact-term search</text>
+        <text x="740" y="129" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">BM25</text>
+
+        <rect x="904" y="34" width="248" height="104" rx="3" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="1028" y="70" text-anchor="middle" font-size="18" font-weight="600" fill="var(--ink)">Combine results</text>
+        <text x="1028" y="92" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">RRF</text>
+        <text x="1028" y="116" text-anchor="middle" font-size="13" fill="var(--ink-2)">by rank, never by score</text>
+
+        <rect x="1192" y="34" width="248" height="104" rx="3" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="1316" y="70" text-anchor="middle" font-size="18" font-weight="600" fill="var(--ink)">Best evidence first</text>
+        <text x="1316" y="92" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">Cross-encoder</text>
+        <text x="1316" y="116" text-anchor="middle" font-size="13" fill="var(--ink-2)">top 5 chunks kept</text>
+
+        <g stroke="var(--flow)" stroke-width="2.5" fill="none" marker-end="url(#ah)">
+          <line x1="288" y1="86" x2="321" y2="86"/>
+          <line x1="576" y1="58" x2="609" y2="58"/>
+          <line x1="576" y1="114" x2="609" y2="114"/>
+          <line x1="864" y1="58" x2="897" y2="58"/>
+          <line x1="864" y1="114" x2="897" y2="114"/>
+          <line x1="1152" y1="86" x2="1185" y2="86"/>
+        </g>
+
+        <path d="M1440,86 H1472 V178 H28 V278 H60" stroke="var(--flow)" stroke-width="2.5" fill="none" marker-end="url(#ah)"/>
+
+        <!-- ============ AUGMENTED GENERATION ============ -->
+        <text x="750" y="211" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" letter-spacing="2.4" fill="var(--flow)">AUGMENTED GENERATION — THREE CHECKS BEFORE FITLY ANSWERS</text>
+
+        <rect x="68" y="226" width="428" height="112" rx="3" fill="none" stroke="var(--stop)" stroke-width="2"/>
+        <text x="96" y="256" font-size="12" font-family="IBM Plex Mono, monospace" letter-spacing="1.5" fill="var(--stop)">GUARD 1</text>
+        <text x="96" y="287" font-size="22" font-weight="600" fill="var(--ink)">Is this even relevant?</text>
+        <text x="96" y="313" font-size="14" fill="var(--ink-2)">Similarity below 0.60 — refuse before</text>
+        <text x="96" y="332" font-size="14" fill="var(--ink-2)">the model is ever called.</text>
+
+        <rect x="536" y="226" width="428" height="112" rx="3" fill="none" stroke="var(--stop)" stroke-width="2"/>
+        <text x="564" y="256" font-size="12" font-family="IBM Plex Mono, monospace" letter-spacing="1.5" fill="var(--stop)">GUARD 2</text>
+        <text x="564" y="287" font-size="22" font-weight="600" fill="var(--ink)">Does the evidence answer it?</text>
+        <text x="564" y="313" font-size="14" fill="var(--ink-2)">The model writes from the retrieved text</text>
+        <text x="564" y="332" font-size="14" fill="var(--ink-2)">only — or declares it insufficient.</text>
+
+        <rect x="1004" y="226" width="428" height="112" rx="3" fill="none" stroke="var(--stop)" stroke-width="2" stroke-dasharray="7 5"/>
+        <text x="1032" y="256" font-size="12" font-family="IBM Plex Mono, monospace" letter-spacing="1.5" fill="var(--stop)">GUARD 3</text>
+        <text x="1032" y="287" font-size="22" font-weight="600" fill="var(--ink)">Are the claims supported?</text>
+        <text x="1032" y="313" font-size="14" fill="var(--ink-2)">A different model family re-reads every</text>
+        <text x="1032" y="332" font-size="14" fill="var(--ink-2)">claim against the evidence.</text>
+
+        <g stroke="var(--flow)" stroke-width="2.5" fill="none" marker-end="url(#ah)">
+          <line x1="496" y1="282" x2="529" y2="282"/>
+          <line x1="964" y1="282" x2="997" y2="282"/>
+        </g>
+
+        <g stroke="var(--flow)" stroke-width="2.5" fill="none">
+          <path d="M750,338 V372"/>
+          <path d="M402,372 H1098"/>
+          <path d="M402,372 V395" marker-end="url(#ah)"/>
+          <path d="M1098,372 V395" marker-end="url(#ah)"/>
+        </g>
+
+        <!-- ============ TWO ENDINGS ============ -->
+        <rect x="68" y="404" width="668" height="164" rx="4" fill="none" stroke="var(--ok)" stroke-width="4"/>
+        <text x="110" y="468" font-size="46" font-weight="600" fill="var(--ok)">✓</text>
+        <text x="172" y="468" font-size="34" font-weight="600" fill="var(--ink)">ANSWER WITH EVIDENCE</text>
+        <text x="172" y="506" font-size="19" fill="var(--ink-2)">Every claim links to the posting it came from.</text>
+        <text x="172" y="533" font-size="19" fill="var(--ink-2)">The evidence stays visible and verifiable.</text>
+
+        <rect x="764" y="404" width="668" height="164" rx="4" fill="none" stroke="var(--stop)" stroke-width="4"/>
+        <text x="806" y="468" font-size="46" font-weight="600" fill="var(--stop)">✕</text>
+        <text x="868" y="468" font-size="34" font-weight="600" fill="var(--ink)">DON’T KNOW</text>
+        <text x="868" y="506" font-size="19" fill="var(--ink-2)">The evidence doesn’t support an answer,</text>
+        <text x="868" y="533" font-size="19" fill="var(--ink-2)">and it says which check stopped it.</text>
+      </g>
+    </svg>
+  </figure>
+
+  <div class="band">
+    <div>
+      <p class="band-title">Measured on every demo question</p>
+      <svg viewBox="0 0 800 96" role="img" aria-label="Similarity scale. Sourdough at 0.416 falls below the 0.60 threshold and is stopped by guard 1. Applied count at 0.618 and hiring manager email at 0.648 both clear the threshold and are refused by guard 2. Kubernetes at 0.727 is answered.">
+        <line x1="30" y1="56" x2="770" y2="56" stroke="var(--rule)" stroke-width="2"/>
+        <line x1="392" y1="30" x2="392" y2="70" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="392" y="22" text-anchor="middle" font-size="13" font-weight="600" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">0.60</text>
+
+        <circle cx="178" cy="56" r="7" fill="var(--stop)"/>
+        <text x="178" y="84" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--ink-2)">0.416</text>
+        <text x="178" y="44" text-anchor="middle" font-size="12" fill="var(--ink-3)">sourdough · G1</text>
+
+        <circle cx="481" cy="56" r="13" fill="var(--stop)"/>
+        <circle cx="481" cy="56" r="21" fill="none" stroke="var(--stop)" stroke-width="2"/>
+        <text x="481" y="90" text-anchor="middle" font-size="15" font-weight="600" font-family="IBM Plex Mono, monospace" fill="var(--stop)">0.618</text>
+
+        <circle cx="525" cy="56" r="7" fill="var(--stop)"/>
+        <text x="580" y="84" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--ink-2)">0.648</text>
+        <text x="592" y="44" text-anchor="middle" font-size="12" fill="var(--ink-3)">manager email · G2</text>
+
+        <circle cx="675" cy="56" r="7" fill="var(--ok)"/>
+        <text x="710" y="84" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--ink-2)">0.727</text>
+        <text x="706" y="44" text-anchor="middle" font-size="12" fill="var(--ink-3)">Kubernetes · answered</text>
+      </svg>
+    </div>
+
+    <div class="hero">
+      <div class="row">
+        <span class="big">0.618</span>
+        <span class="pass">clears the 0.60 threshold.<br>Guard 1 waves it straight through.</span>
+      </div>
+      <p class="q">“How many people applied to this job?”</p>
+      <p class="kicker">No posting contains applicant counts — so the model refuses anyway. <b>Relevant. Not answerable.</b></p>
+    </div>
+  </div>
+
+  <footer>
+    <span>Separation between answerable and on-topic-unanswerable questions: <strong>0.013</strong> — against <strong>0.203</strong> for off-domain. Guard 1 is structurally blind to the middle case.</span>
+    <span>RAG · LangChain + LangGraph · github.com/phanindranalam/fitly-rag</span>
+  </footer>
+</div>

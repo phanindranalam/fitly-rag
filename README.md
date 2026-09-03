@@ -48,8 +48,9 @@ You're deciding where to spend a Sunday. Possibly where to spend the next three 
 So Fitly is built the other way round: **the refusal came first, and everything else was built around it.**
 
 ---
-Fitly one-pager
+
 ![Fitly: a job seeker's question runs through retrieval — semantic and exact-term search, fused and reranked — then three checks, ending in either an answer where every claim links to its posting, or a refusal that names the check that stopped it.](docs/one-pager.png)
+
 ---
 
 ## For the person actually doing the applying
@@ -125,8 +126,8 @@ contain a hiring manager's name or an application count.
 That gap is what this project is about. A similarity score tells you whether you
 retrieved something *related*. It cannot tell you whether the retrieved text *contains
 the answer*. Measured across the full evaluation set, the separation between answerable
-and unanswerable-but-on-topic questions is **+0.013** — noise. Against genuinely
-off-domain questions it is **+0.203**.
+and unanswerable-but-on-topic questions is **+0.084** — too small to gate on. Against
+genuinely off-domain questions it is **+0.203**, 2.4× wider.
 
 So the score catches sourdough. Something else has to catch the hiring manager.
 
@@ -324,7 +325,9 @@ BM25 applies the byte-identical predicate in Python. A hybrid retriever whose tw
 
 I assumed cosine similarity could separate *answerable* questions from *unanswerable* ones. That assumption is the entire premise of guard 1.
 
-The evaluation said the gap was **0.013**. Statistically nothing.
+The first measurement said **0.013** — answerable questions at 0.655, unanswerable at
+0.642. On the shipped configuration it is **0.084**. Either way: nothing you can build
+a gate on.
 
 The reason turned out to be that every trap question was still *about jobs*. "What was revenue last quarter" is topically adjacent to a job posting — it's about the company — so retrieval happily returns company chunks at high similarity that simply don't contain revenue. When I added genuinely off-domain questions (sourdough recipes, brake pads), the gap jumped to **0.203**.
 
@@ -360,7 +363,7 @@ Full write-ups in [`docs/PROJECT.md`](docs/PROJECT.md) §8. Short version, becau
 |---|---|---|
 | 01 | The boilerplate detector found none, so there must not be much | It counted fingerprints globally. Boilerplate is written **per employer** — Stripe's EEO statement names Stripe. My cutoff was 312 documents when the ceiling was 25. Zero was arithmetically guaranteed. Counting per employer: **48.8% of the corpus removed** |
 | 02 | 101 postings support this eval question | Substring matching. `"phi"` matched inside `"sophisticated"`. Real count: 2 |
-| 03 | Similarity separates answerable from unanswerable | +0.013. See above |
+| 03 | Similarity separates answerable from unanswerable | +0.013 at the time, +0.084 shipped. Neither is a gate. See above |
 | 04 | This question is a trap — postings don't state leave durations | 190 sentences do. **The label was the bug**, written *after* I'd already learned this exact lesson once |
 | 05 | 384 dimensions is right because it matches the chunk size | Reads like physics, isn't. It survived every test because nothing here tested it. A reviewer caught it, not me |
 | 06 | 98.5% faithfulness | Generator, verifier and judge were all one model. That's not a measurement, that's Llama agreeing with Llama. Independent judge: **97.9%, and refusal accuracy fell too** |

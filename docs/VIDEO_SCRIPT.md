@@ -204,9 +204,9 @@ Ten seconds. Move.
 >
 > But the finding I'd put my name on is a negative one. I assumed similarity could
 > separate answerable questions from unanswerable ones. **That is the entire premise
-> of guard one. The gap was 0.013.** Nothing.
+> of guard one. The gap was 0.084.** Too small to gate on.
 >
-> With genuinely off-domain questions, that gap jumps to **0.203** — sixteen times
+> With genuinely off-domain questions, that gap jumps to **0.203** — two and a half times
 > wider. So guard one isn't weak. It's *structurally* blind to questions that are
 > on-topic and unanswerable. An HR bot retrieves the parental-leave policy perfectly
 > when you ask for a number the policy never states.
@@ -283,7 +283,7 @@ supports and no more.*
 
 Cut in this order: **query 2 (1:22)** → shorten the corpus half of the one-pager beat.
 
-**Never cut:** the 0.618 moment, the 0.013 / 0.203 finding, the independent judge, or
+**Never cut:** the 0.618 moment, the 0.084 / 0.203 finding, the independent judge, or
 the AI-tools section.
 
 **The resume feature is deliberately not in this cut.** It costs zero API time, so if
@@ -324,7 +324,7 @@ your trimmed edit lands under 4:35 you can add 20 seconds after the judge beat:
 >
 > The headline result is a negative one. Retrieval similarity measures *topic*, not
 > *answerability*: separation between answerable and unanswerable-but-on-topic
-> questions was 0.013, versus 0.203 for genuinely off-domain questions. Guard 1 is
+> questions was 0.084, versus 0.203 for genuinely off-domain questions. Guard 1 is
 > structurally blind to questions that are on-topic and unanswerable — which is why
 > guard 2 exists.
 >

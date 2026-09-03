@@ -462,6 +462,30 @@ This generalizes well past job postings. An HR policy bot retrieves the parental
 
 ---
 
+### Guard 3 costs more than it currently returns
+
+Measured warm on the demo question, same corpus, same index, both ways:
+
+| | end-to-end |
+|---|---|
+| `VERIFY_ANSWERS=true` | **237s** |
+| `VERIFY_ANSWERS=false` | **83s** |
+
+The verifier is Qwen3-235B, the largest model on the endpoint, and it runs once per
+*answered* question — `node_verify` returns early on refusals, so guards 1 and 2 are
+unaffected either way. That is **154 seconds, 65% of end-to-end latency**, for a check
+that has fired exactly once across this evaluation and was wrong when it did
+(Finding 07). Against a declared budget of `LATENCY_BUDGET_S = 5.0`.
+
+These figures were taken while the Nebius endpoint was degraded — a trivial 40-token
+completion measured 37.6s — so the absolute numbers are not a clean benchmark of the
+model. The *ratio* is the durable part, and it is the tradeoff worth naming: stronger
+verification against latency. Guard 3 is behind a flag for that reason. Deciding where
+the extra verification justifies its cost needs a measurement on a healthy endpoint
+and a false-positive rate better characterised than n=1.
+
+---
+
 ## 11. How I used AI coding tools
 
 Built in a single extended session with **Claude (Cowork mode)** as a pair programmer, with a deliberate division of labour.

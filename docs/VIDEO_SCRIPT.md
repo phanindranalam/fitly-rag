@@ -67,19 +67,24 @@ land near 4:45.
 
 ---
 
-## 0:00 – 0:28 — Hook + who's speaking *(req 2)*
+## 0:00 – 0:35 — Hook + who's speaking *(req 2)*
 
 **Screen: the app, already open. No title card.**
 
-> "Imagine forty job tabs open and one Sunday to decide where to apply. Across the
-> 874 postings I collected, reading all of them would take about 58 hours.
+> "Imagine you're job hunting. It's Sunday night, you have forty tabs open, and
+> you're anxious, because you know most of these are a waste of your time. You just
+> don't know which ones. Reading all **800-plus** postings properly would take about
+> **58 hours**. So you skim, apply to the wrong six, and hear nothing back.
 >
-> I'm Phanindra. I come from **platform engineering and SRE**, so the question I
-> actually wanted answered wasn't *find me more jobs.* It was: which roles genuinely
-> **require** running Kubernetes in production — and which just list it?
+> Fitly reads them for you and answers in plain language: which roles actually require
+> Kubernetes in production, which need a clearance, what on-call really looks like.
+> Every sentence opens the posting it came from, so you can check it in five seconds.
 >
-> That's Fitly. But the interesting problem wasn't getting a model to answer questions
-> about job ads. It was teaching the system when **not** to answer."
+> I'm Phanindra. I come from **platform engineering and SRE**. The hard part wasn't
+> answering the questions. It was making sure that when the postings don't contain the
+> answer, Fitly says so instead of inventing one. You're deciding where to spend the
+> next three years, and an assistant that makes things up right there is worse than no
+> assistant at all."
 
 **Pause.**
 
@@ -93,16 +98,13 @@ cut back to "I'm Phanindra, a platform engineer and SRE."*
 
 ---
 
-## 0:28 – 0:50 — The whole system, once *(req 2)*
+## 0:35 – 0:55 — The whole system, once *(req 2)*
 
 **Screen: `docs/one-pager.html`, fullscreen. Trace with the cursor as you talk.**
 
 > "Here's the whole system — it's a RAG pipeline. In plain English: retrieval finds
 > the evidence, and the model reads that evidence and decides what it can actually
 > say.
->
-> A question goes against 874 real postings, a frozen snapshot, so every number I'm
-> about to show is reproducible.
 >
 > Retrieval runs semantic and exact-term search in parallel, fuses and reranks the
 > evidence, then a LangGraph state machine routes it through conditional checks and

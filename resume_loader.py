@@ -151,7 +151,11 @@ def extract_text(path: str, prefer_llamaparse: bool = True) -> tuple[str, str, l
 
     warnings: list[str] = []
 
-    if prefer_llamaparse:
+    # No key configured is the normal case, not a warning: LlamaParse is an
+    # optional layout-aware upgrade, and the local parser is the default path.
+    # Surfacing "LlamaParse unavailable" to a user who never asked for it is
+    # noise that reads like a fault.
+    if prefer_llamaparse and os.getenv("LLAMA_CLOUD_API_KEY", "").strip():
         try:
             text = _clean(_parse_with_llamaparse(path))
             if len(text) >= MIN_USABLE_CHARS:

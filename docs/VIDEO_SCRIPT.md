@@ -104,9 +104,10 @@ cut back to "I'm Phanindra, a platform engineer and SRE."*
 > A question goes against 874 real postings, a frozen snapshot, so every number I'm
 > about to show is reproducible.
 >
-> Retrieval runs two paths in parallel and fuses them. Then generation passes three
-> checks: is this relevant at all, does the evidence actually answer it, and are the
-> individual claims supported.
+> Retrieval runs semantic and exact-term search in parallel, fuses and reranks the
+> evidence, then a LangGraph state machine routes it through conditional checks and
+> retry logic before Fitly answers. Three checks: is this relevant at all, does the
+> evidence actually answer it, and are the individual claims supported.
 >
 > Only two ways out — an answer where every claim links to its posting, or *I don't
 > know*, with the reason. That second box is what this project is actually about."
@@ -327,6 +328,13 @@ your trimmed edit lands under 4:35 you can add 20 seconds after the judge beat:
 > questions was 0.084, versus 0.203 for genuinely off-domain questions. Guard 1 is
 > structurally blind to questions that are on-topic and unanswerable — which is why
 > guard 2 exists.
+>
+> Stack: LangChain · LangGraph state machine with conditional retry · Chroma cosine
+> retrieval · BGE-small-en-v1.5 local embeddings · BM25 · Reciprocal Rank Fusion
+> (k=60) · MS MARCO MiniLM cross-encoder reranking · section-aware chunking vs.
+> RecursiveCharacterTextSplitter · metadata pre-filtering across both retrieval
+> paths · Streamlit · Nebius-hosted Llama-3.3-70B generation · Qwen3-235B
+> independent verification and evaluation.
 >
 > Built by Phanindra Nalam — platform engineering & SRE.
 > Repo: https://github.com/phanindranalam/fitly-rag

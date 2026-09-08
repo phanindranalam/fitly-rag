@@ -48,9 +48,7 @@ You're deciding where to spend a Sunday. Possibly where to spend the next three 
 So Fitly is built the other way round: **the refusal came first, and everything else was built around it.**
 
 ---
-
-![Fitly: a job seeker's question runs through retrieval — semantic and exact-term search, fused and reranked — then three checks, ending in either an answer where every claim links to its posting, or a refusal that names the check that stopped it.](docs/one-pager.png)
-
+[![Fitly: a job seeker's question runs through retrieval, semantic and exact-term search, fused and reranked, then three checks, ending in either an answer where every claim links to its posting, or a refusal that names the check that stopped it.](docs/one-pager.png)](https://phanindranalam.github.io/fitly-rag/one-pager.html)
 ---
 
 ## For the person actually doing the applying

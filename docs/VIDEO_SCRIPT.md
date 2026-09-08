@@ -52,7 +52,9 @@ measured tradeoff you disclose is a strength; a silent one is an asterisk.
 - [ ] `python ui_test.py` → 0 failed
 - [ ] Streamlit warmed with a throwaway query, browser at **125%**
 - [ ] Sidebar: Anywhere / no work-mode / **section** / **hybrid** / rerank **on**
-- [ ] Tab 2: `docs/one-pager.html` **fullscreen (F11)** · Tab 3: `eval/results/eval-<latest>.md`
+- [ ] Tab 2: `docs/one-pager.html` **fullscreen (F11)**
+- [ ] Tab 3: `docs/PROJECT.md` scrolled to section 9 (beat 7)
+- [ ] Tab 4: `eval/results/eval-20260823-222549.md` (beat 8, the judge line)
 - [ ] Notifications off, Slack quit
 
 ### The three waits
@@ -196,7 +198,9 @@ Ten seconds. Move.
 
 ## 2:28 – 3:05 — What the evaluation proved wrong *(req 2)*
 
-**Screen: `eval/results/eval-<latest>.md`.**
+**Screen: `docs/PROJECT.md` section 9 — the table with +0.084 and +0.203 side by
+side. The eval results file does not carry the separation figures; this is the one
+that does, so do not open the eval markdown until beat 8.**
 
 > "Rather than tune this by feel, I built a 20-question evaluation set across eight
 > configurations — answerable questions, on-topic questions the corpus can't answer,
@@ -221,7 +225,8 @@ Ten seconds. Move.
 
 ## 3:05 – 3:30 — The independent judge *(req 2)*
 
-**Screen: eval header showing `judge=Qwen3-235B (independent)`.**
+**Screen: `eval/results/eval-20260823-222549.md` — the header line showing
+`judge=Qwen3-235B-A22B-Instruct-2507 (independent of generator)`.**
 
 > "I also caught a problem in my own evaluation. Originally the generator, the
 > verifier and the judge were all the same model family — Llama grading Llama. That

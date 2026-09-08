@@ -52,9 +52,18 @@ measured tradeoff you disclose is a strength; a silent one is an asterisk.
 - [ ] `python ui_test.py` → 0 failed
 - [ ] Streamlit warmed with a throwaway query, browser at **125%**
 - [ ] Sidebar: Anywhere / no work-mode / **section** / **hybrid** / rerank **on**
-- [ ] Tab 2: `docs/one-pager.html` **fullscreen (F11)**
-- [ ] Tab 3: `docs/PROJECT.md` scrolled to section 9 (beat 7)
-- [ ] Tab 4: `eval/results/eval-20260823-222549.md` (beat 8, the judge line)
+**Open these five, in this order, before you start. You switch tabs six times total.**
+
+| tab | what | used at |
+|---|---|---|
+| 1 | the app, warmed, rerank ON, no filters | 0:00, 0:55, 1:22, 1:42, 1:52, 3:30 |
+| 2 | `docs/one-pager.html` **fullscreen (F11)** | 0:35 and 4:12 |
+| 3 | `docs/PROJECT.md` scrolled to **section 9** | 2:28 |
+| 4 | `eval/results/eval-20260823-222549.md` header block | 3:05 |
+| 5 | `README.md` at the **seven-row mistakes table** | 3:42 |
+
+Scroll each tab to its exact spot now. Hunting for a table on camera costs more than
+the beat is worth.
 - [ ] Notifications off, Slack quit
 
 ### The three waits
@@ -120,7 +129,12 @@ cut back to "I'm Phanindra, a platform engineer and SRE."*
 
 ---
 
-## 0:50 – 1:22 — Useful query 1 *(reqs 1, 4)*
+## 0:55 – 1:22 — Useful query 1 *(reqs 1, 4)*
+
+**Screen: TAB 1, the app, Ask tab.** Type the question, then expand **"How this answer
+was retrieved"** while it runs and leave it open. Cursor on the dense and BM25 rank
+columns as you talk. When the answer lands, scroll to Sources and click one citation,
+which opens the posting in a new tab: close it and come straight back.
 
 **Type:** `Which roles require running Kubernetes in production?`
 
@@ -144,6 +158,9 @@ Do not read five job names.
 
 ## 1:22 – 1:42 — Useful query 2 *(reqs 1, 4)*
 
+**Screen: TAB 1, the app.** Stay put. Cursor on **TS/SCI** in the answer text, nowhere
+else.
+
 **Type:** `Which roles require a security clearance?`
 
 **MEASURED:** answers, `top_sim 0.653`, 2 citations, dense 3 · bm25 5 — the answer
@@ -160,6 +177,9 @@ Point at the acronym. Don't read the paragraph.
 
 ## 1:42 – 1:52 — The easy refusal *(req 4)*
 
+**Screen: TAB 1, the app.** Cursor on the refusal banner, then on `top similarity
+0.416 < MIN_SIM 0.6` in the panel.
+
 **Click the example:** `What is a good recipe for sourdough bread?`
 
 > "Now something deliberately unrelated. Similarity drops to **0.416**, below my
@@ -175,6 +195,10 @@ Ten seconds. Move.
 ---
 
 ## 1:52 – 2:28 — ★ The refusal that matters. **Slow down.** *(req 4)*
+
+**Screen: TAB 1, the app.** The whole beat lives on the similarity number. Put the
+cursor on **0.618** and leave it there while you deliver the two slow lines. Do not
+scroll.
 
 **Click the example:** `How many people applied to this job?`
 
@@ -240,6 +264,10 @@ that does, so do not open the eval markdown until beat 8.**
 
 ## 3:30 – 3:42 — The guard-3 disclosure *(honesty beat)*
 
+**Screen: back to TAB 1, the app, Kubernetes retrieval panel.** Cursor on the trace
+line `verify skipped (VERIFY_ANSWERS=false)`. You are claiming a guard is off; showing
+the runtime say so is stronger than asserting it over a static page.
+
 > "One measurement I took today rather than planned: guard three costs **154 of 237
 > seconds** end to end — 65% of latency, for a check that has never overturned an
 > answer on this corpus. It's off in this recording for that reason. Guards one and
@@ -259,6 +287,10 @@ supports and no more.*
 ---
 
 ## 3:42 – 4:12 — AI coding tools *(req 3 — DO NOT SKIP)*
+
+**Screen: TAB 5, `README.md`, the seven-row mistakes table.** Scroll it slowly while
+you talk and land on **row 06**, which is the judge mistake you described two beats
+ago. That connection is the point: the table is the evidence for the claim.
 
 > "I used Claude heavily building this. My biggest lesson was that AI-generated code
 > failing loudly was never the dangerous case.

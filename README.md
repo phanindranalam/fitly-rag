@@ -294,7 +294,7 @@ RRF(doc) =  Σ   1 / (60 + rank_in_that_retriever)
          retrievers
 ```
 
-Nothing to tune, no scale mismatch, no renormalizing. On real queries the two retrievers frequently return **completely disjoint** result sets — which is the entire argument for hybrid, visible on screen in the app's retrieval panel.
+Nothing to tune, no scale mismatch, no renormalizing. On real queries the two retrievers routinely surface results the other missed, which is the entire argument for hybrid, visible on screen in the app's retrieval panel.
 
 ### 2. Fuse for order. Threshold on cosine for confidence.
 
@@ -352,7 +352,23 @@ The two guards were never redundancy. They cover disjoint failure modes, and the
 This generalizes well past job postings. An HR bot retrieves the parental-leave policy perfectly when you ask for a number the policy doesn't state. A finance RAG pulls exactly the right 10-K section for a metric that isn't in it. **Perfect retrieval, zero answer.** Any system that gates refusal on retrieval score alone has this hole.
 
 ---
+## How I used AI coding tools
 
+Built in a single extended session with **Claude (Cowork mode)** as a pair programmer.
+
+| Claude did well | Claude got wrong |
+|---|---|
+| Scaffolding the pipeline; writing docstrings that made each design decision explicit and therefore falsifiable; building the diagnostic tooling (`bench_embed.py`, `check_coverage.py`, `smoke_test.py`), each of which caught something | Several of the most consequential errors below came from AI-written code or AI-assisted analysis: the global-frequency boilerplate detector, the substring matcher, the RRF threshold, the mislabelled trap question, the embedding-dimension claim |
+
+None of them crashed. All were confidently argued in comments before being tested.
+
+The workflow that actually worked: have the AI write the argument down explicitly, then
+build the check that could falsify it, then run the check. Every confident architectural
+claim in a docstring became a hypothesis. This project falsified seven of them, below.
+
+Full write-up: [`docs/PROJECT.md`](docs/PROJECT.md) 
+
+---
 ## Seven things I got wrong
 
 Full write-ups in [`docs/PROJECT.md`](docs/PROJECT.md) §8. Short version, because the pattern matters more than the individual bugs:

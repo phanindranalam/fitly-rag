@@ -162,7 +162,14 @@ LATENCY_BUDGET_S = float(os.getenv("LATENCY_BUDGET_S", "5.0"))
 def describe() -> str:
     """One-line config summary, printed by every entry point so a run's
     settings end up in the terminal transcript you record for the demo."""
-    llm = (f"nebius:{NEBIUS_MODEL}" if LLM_PROVIDER == "nebius"
+    # The label follows the endpoint, not the provider name. NEBIUS_BASE_URL is
+    # the generic OpenAI-compatible endpoint setting -- it has pointed at Nebius,
+    # then OpenRouter -- and a footer that says "nebius" while calling
+    # OpenRouter is on screen for the whole demo.
+    host = ("openrouter" if "openrouter" in NEBIUS_BASE_URL
+            else "fireworks" if "fireworks" in NEBIUS_BASE_URL
+            else "nebius")
+    llm = (f"{host}:{NEBIUS_MODEL}" if LLM_PROVIDER == "nebius"
            else f"anthropic:{ANTHROPIC_MODEL}")
     emb = (f"local:{LOCAL_EMBED_MODEL}" if EMBED_PROVIDER == "local"
            else f"nebius:{NEBIUS_EMBED_MODEL}")

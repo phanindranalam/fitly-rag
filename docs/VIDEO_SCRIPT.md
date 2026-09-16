@@ -66,15 +66,11 @@ Scroll each tab to its exact spot now. Hunting for a table on camera costs more 
 the beat is worth.
 - [ ] Notifications off, Slack quit
 
-### The three waits
+### Latency
 
-Kubernetes, security clearance and applied-count each cost ~80s. **Record straight
-through, then trim each wait in Clipchamp** and caption the cut:
-
-> ⏱ 78s of model latency trimmed — Nebius endpoint degraded, 2026-09-02
-
-Captioning it is what makes it honest rather than edited-to-flatter. Trimmed, you
-land near 4:45.
+Measured 2026-09-16 on OpenRouter: Kubernetes **15.5s**, sourdough **14.2s**,
+applied-count **4.1s**, hiring-manager **4.4s**. All short enough to talk over.
+**No trim cards needed.** Guard 3 is ON and did not overturn the answered question.
 
 ---
 
@@ -372,7 +368,7 @@ your trimmed edit lands under 4:35 you can add 20 seconds after the judge beat:
 > retrieval · BGE-small-en-v1.5 local embeddings · BM25 · Reciprocal Rank Fusion
 > (k=60) · MS MARCO MiniLM cross-encoder reranking · section-aware chunking vs.
 > RecursiveCharacterTextSplitter · metadata pre-filtering across both retrieval
-> paths · Streamlit · Nebius-hosted Llama-3.3-70B generation · Qwen3-235B
+> paths · Streamlit · OpenRouter-hosted Llama-3.3-70B generation · Qwen3-235B
 > independent verification and evaluation.
 >
 > Built by Phanindra Nalam — platform engineering & SRE.

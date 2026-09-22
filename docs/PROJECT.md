@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Repo** | https://github.com/phanindranalam/fitly-rag |
-| **Demo video** | `<FILL: video url>` |
+| **Demo video** | https://drive.google.com/file/d/1NUDJdPcUoNUBOsPRQOBp_JX2pVcOEyn2/view?usp=drive_link |
 
 ---
 
